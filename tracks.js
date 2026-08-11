@@ -22,7 +22,7 @@ const TRACKS = [
     { title: "Priyotama Mone Rekho", singer: "Kumar Sanu", year: "1991", file: "audio/Priyotama Mone Rekho (PenduJatt.Com.Se).mp3" },
     { title: "Tumi Achho Eto Kachhe Tai", singer: "Kumar Sanu", year: "1991", file: "audio/Tumi Achho Eto Kachhe Tai (PenduJatt.Com.Se).mp3" },
     { title: "Takhon Tomar Ekush Bachhar", singer: "Arati Mukherjee", year: "1988", file: "audio/Takhon Tomar Ekush Bachhar (PenduJatt.Com.Se).mp3" },
-    { title: "Naam Rekhechhi Bonolata", singer: "Shyamal Mitra", year: "1963", file: "audio/N naam Rekhechhi Bonolata (PenduJatt.Com.Se).mp3" },
+    { title: "Naam Rekhechhi Bonolata", singer: "Shyamal Mitra", year: "1963", file: "audio/Naam Rekhechhi Bonolata (PenduJatt.Com.Se).mp3" },
     { title: "Ami Dur Hote Tomarei Dekhechhi", singer: "Hemanta Mukherjee", year: "1963", file: "audio/Ami Dur Hote Tomarei Dekhechhi (PenduJatt.Com.Se).mp3" },
     { title: "Bajlo Tomar Aalor Benu", singer: "Supriti Ghosh", year: "1954", file: "audio/Bajlo Tomar Aalor Benu (PenduJatt.Com.Se).mp3" }
     ,{ title: "Aashona", singer: "Arijit Singh", year: "2014", file: "audio/Aashona (PenduJatt.Com.Se).mp3" }
