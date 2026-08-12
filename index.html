@@ -54,7 +54,7 @@
             overflow: hidden;
             background:
                 linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
-                url("images/pg.png") center/cover no-repeat;
+                url("images/desktop_bg.png") center/cover no-repeat;
         }
 
         .scene::before {
@@ -66,6 +66,14 @@
                 radial-gradient(circle at 50% 35%, transparent 15%, rgba(11, 7, 5, .06) 55%, rgba(11, 7, 5, .26) 100%),
                 linear-gradient(180deg, rgba(0, 0, 0, .08), transparent 30%);
             pointer-events: none;
+        }
+
+        @media (max-width: 500px) {
+            .scene {
+                background:
+                    linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
+                    url("images/mobile_bg.png") center/cover no-repeat;
+            }
         }
 
         .topline {
@@ -483,15 +491,15 @@
             gap: 18px;
             padding: 14px 18px 14px 14px;
             overflow: hidden;
-            border: 1px solid rgba(255, 246, 234, .21);
+            border: 1px solid rgba(255, 255, 255, .18);
             border-radius: 999px;
             background:
-                radial-gradient(circle at 20% -45%, rgba(255, 225, 180, .18), transparent 44%),
-                linear-gradient(102deg, rgba(91, 59, 44, .97) 0%, rgba(126, 62, 43, .97) 52%, rgba(160, 49, 45, .97) 100%);
-            box-shadow: 0 22px 68px rgba(0, 0, 0, .38), inset 0 1px 0 rgba(255, 255, 255, .10);
-            backdrop-filter: blur(22px) saturate(1.18);
-            -webkit-backdrop-filter: blur(22px) saturate(1.18);
-            transition: box-shadow .25s ease, border-color .25s ease;
+                radial-gradient(circle at 20% -45%, rgba(255, 225, 180, .16), transparent 44%),
+                linear-gradient(102deg, rgba(91, 59, 44, .36) 0%, rgba(126, 62, 43, .34) 52%, rgba(160, 49, 45, .34) 100%);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .15);
+            backdrop-filter: blur(24px) saturate(1.2);
+            -webkit-backdrop-filter: blur(24px) saturate(1.2);
+            transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease;
         }
 
         .player::after {
@@ -500,7 +508,9 @@
             inset: 0;
             border-radius: inherit;
             pointer-events: none;
-            background: linear-gradient(100deg, rgba(255, 255, 255, .04), transparent 36%, rgba(255, 255, 255, .025));
+            background: linear-gradient(120deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .04) 25%, transparent 65%);
+            opacity: .55;
+            mix-blend-mode: screen;
         }
 
         .player.playing {
