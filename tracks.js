@@ -3,13 +3,17 @@
 */
 const TRACKS = [
     { title: "Shundori Komola", singer: "Armaan Malik & Antara Mitra", year: "2018", file: "audio/Shundori Komola (PenduJatt.Com.Se).mp3" },
+    { title: "Latai", singer: "Vinod Rathod & Akriti Kakkar", year: "2014", file: "audio/Latai (PenduJatt.Com.Se).mp3" },
     { title: "Aashona", singer: "Arijit Singh", year: "2014", file: "audio/Aashona (PenduJatt.Com.Se).mp3" },
+    { title: "Rangabati", singer: "Surojit Chatterjee & Iman Chakraborty", year: "2019", file: "audio/Rangabati (PenduJatt.Com.Se).mp3" },
     { title: "Aaj Noy Gun Gun", singer: "Lata Mangeshkar", year: "1978", file: "audio/Aaj Noy Gun Gun (PenduJatt.Com.Se).mp3" },
     { title: "Dugga Elo", singer: "Monali Thakur", year: "2019", file: "audio/Bolo Dugga Elo (PenduJatt.Com.Se).mp3" },
+    { title: "Amay Prashna Kare Neel Dhrubatara", singer: "Hemanta Mukherjee", year: "1969", file: "audio/Amay Prashna Kare Neel Dhrubatara (PenduJatt.Com.Se).mp3" },
     { title: "Emon Madhur Sandhyay", singer: "Asha Bhosle", year: "1987", file: "audio/Emon Madhur Sandhyay - NaaSongs.mp3" },
     { title: "Dhaker Taley", singer: "Abhijeet Bhattacharya, Parineeta & Sudipto", year: "2009", file: "audio/Dhaker Taley (PenduJatt.Com.Se).mp3" },
     { title: "Kotha Hoyechhilo", singer: "Asha Bhosle", year: "1982", file: "audio/Katha Hoyechhilo (PenduJatt.Com.Se).mp3" },
     { title: "Ebar Jeno Onno Rokom Pujo", singer: "Nakash Aziz & Antara Mitra", year: "2014", file: "audio/Ebar Jeno Onno Rokom Pujo (PenduJatt.Com.Se).mp3" },
+    { title: "Ami Je Ke Tomar", singer: "Kishore Kumar", year: "1985", file: "audio/Ami Je Ke Tomar (PenduJatt.Com.Se).mp3" },
     { title: "Aar Koto Raat Eka Thakbo", singer: "Asha Bhosle", year: "1989", file: "audio/Aar Koto Raat Eka Thakbo (PenduJatt.Com.Se).mp3" },
     { title: "Gold Printer Sari Pore", singer: "Mita Chatterjee", year: "2015", file: "audio/Gold Printer Sari Pore (Old Is Gold Special Bengali Adhunik Soft Humming Mix 2025) - Dj Susovan Remix-(MixDunia.IN).mp3" },
     { title: "Aaj Ei Dintake", singer: "Kishore Kumar", year: "1982", file: "audio/Aaj Ei Dintake (PenduJatt.Com.Se).mp3" },
@@ -18,6 +22,7 @@ const TRACKS = [
     { title: "Palki Te Bou Chole Jai", singer: "Mita Chatterjee", year: "1993", file: "audio/Mita_Chatterjee_-_Palki_Te_Bou_Chole_Jai_(mp3.pm).mp3" },
     { title: "Priyotama Mone Rekho", singer: "Kumar Sanu", year: "1991", file: "audio/Priyotama Mone Rekho (PenduJatt.Com.Se).mp3" },
     { title: "Dugga Ma", singer: "Arijit Singh", year: "2017", file: "audio/Dugga Ma (PenduJatt.Com.Se).mp3" },
+    { title: "O Tuni Ma Tomar Tuni Kotha Sone Na", singer: "Promit Kumar", year: "2009", file: "audio/O Tunir Maa Tumar Tuni Katha (Hard Matal Remix) Dj Subham Nd Dj Tuna(OdishaRemix.Com).mp3" },
     { title: "Asha Chhilo Bhalobasa Chhilo", singer: "Kishore Kumar", year: "1977", file: "audio/Asha Chhilo Bhalobasa (PenduJatt.Com.Se).mp3" },
     { title: "Elo Je Maa", singer: "Abhijeet Bhattacharya & Shreya Ghoshal", year: "2012", file: "audio/Elo Je Maa (PenduJatt.Com.Se).mp3" },
     { title: "Tumi Achho Eto Kachhe Tai", singer: "Kumar Sanu", year: "1991", file: "audio/Tumi Achho Eto Kachhe Tai (PenduJatt.Com.Se).mp3" },
@@ -25,5 +30,6 @@ const TRACKS = [
     { title: "Coffee Houser Sei Adda-ta Aaj Aar Nei", singer: "Manna Dey", year: "1983", file: "audio/Coffee Houser Sei Addata (PenduJatt.Com.Se).mp3" },
     { title: "Bajlo Tomar Aalor Benu", singer: "Supriti Ghosh", year: "1954", file: "audio/Bajlo Tomar Aalor Benu (PenduJatt.Com.Se).mp3" },
     { title: "Naam Rekhechhi Bonolata", singer: "Shyamal Mitra", year: "1963", file: "audio/Naam Rekhechhi Bonolata (PenduJatt.Com.Se).mp3" },
-    { title: "Ami Dur Hote Tomarei Dekhechhi", singer: "Hemanta Mukherjee", year: "1963", file: "audio/Ami Dur Hote Tomarei Dekhechhi (PenduJatt.Com.Se).mp3" }
+    { title: "Ami Dur Hote Tomarei Dekhechhi", singer: "Hemanta Mukherjee", year: "1963", file: "audio/Ami Dur Hote Tomarei Dekhechhi (PenduJatt.Com.Se).mp3" },
+    { title: "Opare Thakbo Ami", singer: "Kishore Kumar", year: "1983", file: "audio/Opare Thakbo Ami (PenduJatt.Com.Se).mp3" }
 ];
