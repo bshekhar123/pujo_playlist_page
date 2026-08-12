@@ -54,7 +54,13 @@
             overflow: hidden;
             background:
                 linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
-                url("images/desktop_bg.png") center/cover no-repeat;
+                url("images/desktop_bg_morning.png") center/cover no-repeat;
+        }
+
+        .scene[data-theme="night"] {
+            background:
+                linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
+                url("images/desktop_bg_night.png") center/cover no-repeat;
         }
 
         .scene::before {
@@ -68,12 +74,35 @@
             pointer-events: none;
         }
 
+
         @media (max-width: 500px) {
             .scene {
                 background:
                     linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
-                    url("images/mobile_bg.png") center/cover no-repeat;
+                    url("images/mobile_bg_morning.png") center/cover no-repeat;
             }
+
+            .scene[data-theme="night"] {
+                background:
+                    linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
+                    url("images/mobile_bg_night.png") center/cover no-repeat;
+            }
+
+            .speaker-visual {
+                left: 2px;
+                bottom: 118px;
+                width: 210px;
+                height: 130px;
+            }
+
+            .speaker-wave {
+                width: 72px;
+                height: 72px;
+            }
+
+            .speaker-wave:nth-child(2) { left: 42px; bottom: 28px; }
+            .speaker-wave:nth-child(3) { left: 88px; bottom: 8px; }
+            .speaker-wave:nth-child(4) { left: 134px; bottom: 28px; }
         }
 
         .topline {
@@ -87,8 +116,15 @@
             pointer-events: none;
         }
 
-        .brand {
+        .brand-block {
             pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .brand {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -97,6 +133,27 @@
             letter-spacing: .2em;
             text-transform: uppercase;
             text-shadow: 0 2px 18px rgba(0, 0, 0, .65);
+        }
+
+        .brand-time {
+            margin-left: 2px;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            color: rgba(255, 248, 237, .88);
+            text-shadow: 0 2px 18px rgba(0, 0, 0, .65);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .brand-count {
+            margin-left: 18px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            color: rgba(255, 248, 237, .82);
+            text-shadow: 0 2px 18px rgba(0, 0, 0, .65);
+            white-space: nowrap;
         }
 
         .brand-dot {
@@ -184,7 +241,7 @@
         }
 
         .hero-mark .hero-accent {
-            color: #c15f4e;
+            color: #fafafa;
         }
 
         .scrim {
@@ -1052,7 +1109,14 @@
 <body>
     <main class="scene">
         <header class="topline">
-            <div class="brand"><span class="brand-dot"></span><span>Paara Playlist</span></div>
+            <div class="brand-block">
+                <div class="brand">
+                    <span class="brand-dot"></span>
+                    <span>Paara Playlist</span>
+                    <span id="brandClock" class="brand-time">00:00:00</span>
+                </div>
+                <div id="brandCountdown" class="brand-count">0 days left</div>
+            </div>
             <div class="mini-note">Durga Pujo · all night</div>
         </header>
 
@@ -1194,6 +1258,42 @@
         const trackCount = document.getElementById("trackCount");
         const toast = document.getElementById("toast");
         const player = document.querySelector(".player");
+        const brandClock = document.getElementById("brandClock");
+        const brandCountdown = document.getElementById("brandCountdown");
+        const scene = document.querySelector(".scene");
+
+        function getNextPujoStart() {
+            const now = new Date();
+            const next = new Date(now.getFullYear(), 9, 16, 0, 0, 0, 0);
+            if (next <= now) {
+                next.setFullYear(next.getFullYear() + 1);
+            }
+            return next;
+        }
+
+        function updateBrandClock() {
+            if (!brandClock) return;
+            const now = new Date();
+            brandClock.textContent = now.toLocaleTimeString("en-GB", { hour12: false });
+        }
+
+        function updateBrandCountdown() {
+            if (!brandCountdown) return;
+            const now = new Date();
+            const pujoStart = getNextPujoStart();
+            const diffMs = pujoStart - now;
+            const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+            const daysText = diffDays === 1 ? "day" : "days";
+            brandCountdown.textContent = `${diffDays} ${daysText} left`;
+        }
+
+        function updateSceneTheme() {
+            if (!scene) return;
+            const now = new Date();
+            const hour = now.getHours();
+            const isNight = hour >= 20 || hour < 6;
+            scene.setAttribute("data-theme", isNight ? "night" : "day");
+        }
 
         // Load shared TRACKS if not already loaded (tracks.js must be included before this script)
         if (typeof TRACKS === 'undefined') {
@@ -1448,6 +1548,12 @@
             }
         });
 
+        updateBrandClock();
+        updateBrandCountdown();
+        updateSceneTheme();
+        setInterval(updateBrandClock, 1000);
+        setInterval(updateBrandCountdown, 60000);
+        setInterval(updateSceneTheme, 60000);
         setNowPlaying(currentIndex);
         setPlayIcon(false);
         renderTracks();
