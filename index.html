@@ -1290,7 +1290,7 @@
             if (!scene) return;
             const now = new Date();
             const hour = now.getHours();
-            const isNight = hour >= 20 || hour < 6;
+            const isNight = hour >= 20 || hour < 10;
             scene.setAttribute("data-theme", isNight ? "night" : "day");
         }
 
