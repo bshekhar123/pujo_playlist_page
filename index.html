@@ -52,15 +52,30 @@
             position: relative;
             isolation: isolate;
             overflow: hidden;
-            background:
-                linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
-                url("images/desktop_bg_morning.png") center/cover no-repeat;
+            background: #160c09;
         }
 
-        .scene[data-theme="night"] {
-            background:
-                linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
-                url("images/desktop_bg_night.png") center/cover no-repeat;
+        .bg-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity .45s ease;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .scene[data-theme="day"] .bg-video--desktop-morning,
+        .scene[data-theme="night"] .bg-video--desktop-night {
+            opacity: 1;
+        }
+
+        .scene[data-theme="night"] .bg-video--desktop-morning,
+        .scene[data-theme="day"] .bg-video--desktop-night {
+            opacity: 0;
         }
 
         .scene::before {
@@ -76,16 +91,19 @@
 
 
         @media (max-width: 500px) {
-            .scene {
-                background:
-                    linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
-                    url("images/mobile_bg_morning.png") center/cover no-repeat;
+            .bg-video--desktop-morning,
+            .bg-video--desktop-night {
+                display: none;
             }
 
-            .scene[data-theme="night"] {
-                background:
-                    linear-gradient(180deg, rgba(12, 8, 6, .02) 0%, rgba(12, 8, 6, .04) 45%, rgba(12, 8, 6, .48) 100%),
-                    url("images/mobile_bg_night.png") center/cover no-repeat;
+            .scene[data-theme="day"] .bg-video--mobile-morning,
+            .scene[data-theme="night"] .bg-video--mobile-night {
+                opacity: 1;
+            }
+
+            .scene[data-theme="night"] .bg-video--mobile-morning,
+            .scene[data-theme="day"] .bg-video--mobile-night {
+                opacity: 0;
             }
 
             .speaker-visual {
@@ -1107,7 +1125,20 @@
 </head>
 
 <body>
-    <main class="scene">
+    <main class="scene" data-theme="day">
+        <video class="bg-video bg-video--desktop-morning" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+            <source src="images/Morning_bg_video_desktop.mp4" type="video/mp4" />
+        </video>
+        <video class="bg-video bg-video--desktop-night" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+            <source src="images/Night_bg_video_desktop.mp4" type="video/mp4" />
+        </video>
+        <video class="bg-video bg-video--mobile-morning" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+            <source src="images/morning_bg_video_mobile.mp4" type="video/mp4" />
+        </video>
+        <video class="bg-video bg-video--mobile-night" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+            <source src="images/night_bg_video_mobile.mp4" type="video/mp4" />
+        </video>
+
         <header class="topline">
             <div class="brand-block">
                 <div class="brand">
@@ -1290,8 +1321,8 @@
             if (!scene) return;
             const now = new Date();
             const hour = now.getHours();
-            const isNight = hour >= 20 || hour < 10;
-            scene.setAttribute("data-theme", isNight ? "night" : "day");
+            const isMorning = hour >= 10 && hour <= 19;
+            scene.setAttribute("data-theme", isMorning ? "day" : "night");
         }
 
         // Load shared TRACKS if not already loaded (tracks.js must be included before this script)
@@ -1552,7 +1583,7 @@
         updateSceneTheme();
         setInterval(updateBrandClock, 1000);
         setInterval(updateBrandCountdown, 60000);
-        setInterval(updateSceneTheme, 60000);
+        setInterval(updateSceneTheme, 1000);
         setNowPlaying(currentIndex);
         setPlayIcon(false);
         renderTracks();
