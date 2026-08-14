@@ -1,6 +1,3 @@
-/* Shared playlist array used by index.html and array.html
-   Edit this file when adding new songs (filenames must match files in /audio)
-*/
 const TRACKS = [
     { title: "Shundori Komola", singer: "Armaan Malik & Antara Mitra", year: "2018", file: "audio/Shundori Komola (PenduJatt.Com.Se).mp3" },
     { title: "Latai", singer: "Vinod Rathod & Akriti Kakkar", year: "2014", file: "audio/Latai (PenduJatt.Com.Se).mp3" },

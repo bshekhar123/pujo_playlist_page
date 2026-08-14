@@ -4,213 +4,163 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#8f3229" />
-    <link rel="icon" type="image/png" href="images/playbar_thumbnail.png" />
-    <title>Playlist Data — Ultimate Paara Playlist</title>
-    <style>
-        :root {
-            --bg: #0f0b08;
-            --panel: #18120f;
-            --text: #f7ecdc;
-            --muted: rgba(247, 236, 220, .74);
-            --accent: #d77a4a;
-            --line: rgba(247, 236, 220, .12);
-            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
 
+    <title>Playlist Array</title>
+
+    <style>
         * {
             box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            min-height: 100vh;
-            background: radial-gradient(circle at top left, rgba(255, 223, 183, .12), transparent 30%), #0f0b08;
-            color: var(--text);
+            padding: 30px;
+            background: #17110e;
+            color: #fff7e9;
+            font-family: Arial, sans-serif;
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at 80% 15%, rgba(251, 220, 167, .18), transparent 18%),
-                linear-gradient(180deg, rgba(0, 0, 0, .18), transparent 40%);
-            pointer-events: none;
+        main {
+            width: min(1100px, 100%);
+            margin: auto;
         }
 
-        .page {
-            position: relative;
-            z-index: 1;
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 40px 24px 60px;
+        a {
+            color: #d8b27b;
         }
 
-        header {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: baseline;
-            gap: 16px;
-            margin-bottom: 32px;
+        h1 {
+            margin: 25px 0 6px;
+            font-size: 42px;
         }
 
-        header h1 {
-            margin: 0;
-            font-size: clamp(2.4rem, 4vw, 3.4rem);
-            line-height: 1.02;
+        p {
+            color: rgba(255, 255, 255, .6);
         }
 
-        header p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 0.98rem;
-            max-width: 38rem;
+        .box {
+            margin-top: 24px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .035);
         }
 
-        .panel {
-            background: rgba(16, 10, 7, .95);
-            border: 1px solid rgba(247, 236, 220, .12);
-            border-radius: 26px;
-            padding: 28px;
-            box-shadow: 0 28px 64px rgba(0, 0, 0, .35);
-            backdrop-filter: blur(12px);
-        }
-
-        .panel h2 {
-            margin: 0 0 20px;
-            font-size: 1.25rem;
-            letter-spacing: .04em;
-            text-transform: uppercase;
-            color: var(--accent);
-        }
-
-        .track-table {
+        table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.95rem;
         }
 
-        .track-table th,
-        .track-table td {
+        th,
+        td {
             padding: 12px 14px;
-            border-bottom: 1px solid var(--line);
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
             text-align: left;
+            font-size: 12px;
         }
 
-        .track-table th {
-            color: var(--muted);
-            font-size: 0.82rem;
+        th {
+            color: rgba(255, 255, 255, .45);
+            font-size: 9px;
             letter-spacing: .12em;
             text-transform: uppercase;
         }
 
-        .track-table tr:last-child td {
-            border-bottom: none;
+        td:first-child {
+            width: 45px;
+            color: rgba(255, 255, 255, .4);
         }
 
-        .track-table td:nth-child(1) {
-            width: 52px;
-            color: var(--muted);
+        td:last-child {
+            color: #d8b27b;
+            font-family: monospace;
+            font-size: 10px;
         }
 
-        .track-table td:nth-child(4) {
-            width: 86px;
-            text-align: right;
-        }
-
-        .code-block {
-            margin-top: 24px;
-            padding: 20px;
-            background: rgba(255, 255, 255, .04);
-            border-radius: 18px;
-            overflow-x: auto;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 0.92rem;
-            line-height: 1.5;
-            color: #f9f3df;
-        }
-
-        .code-block pre {
+        pre {
             margin: 0;
-            white-space: pre-wrap;
-            word-break: break-word;
+            padding: 18px;
+            overflow: auto;
+            color: rgba(255, 255, 255, .72);
+            font-size: 11px;
+            line-height: 1.6;
         }
 
-        .footer {
-            margin-top: 28px;
-            color: var(--muted);
-            font-size: 0.92rem;
-        }
-
-        @media (max-width: 720px) {
-            .page {
-                padding: 28px 18px 40px;
+        @media (max-width: 650px) {
+            body {
+                padding: 15px;
             }
 
-            .panel {
-                padding: 20px;
+            .box {
+                overflow-x: auto;
             }
 
-            .track-table th,
-            .track-table td {
-                padding: 10px 12px;
+            table {
+                min-width: 760px;
             }
         }
     </style>
 </head>
 
 <body>
-    <main class="page">
-        <header>
-            <div>
-                <h1>Durga Pujo Playlist Data</h1>
-                <p>Review the track metadata and the JavaScript playlist array for the current player.</p>
-            </div>
-        </header>
 
-        <section class="panel">
-            <h2>Song list</h2>
-            <table class="track-table">
+    <main>
+        <a href="index.html">← Back to player</a>
+
+        <h1>Playlist Array</h1>
+        <p>This page shows the same songs and exact audio paths used by the player.</p>
+
+        <div class="box">
+            <table>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Title</th>
-                        <th>Singer</th>
+                        <th>Song</th>
+                        <th>Artist</th>
                         <th>Year</th>
+                        <th>Audio filename</th>
                     </tr>
                 </thead>
-                <tbody id="tracksBody">
-                    <!-- Filled from tracks.js -->
-                </tbody>
+
+                <tbody id="tableBody"></tbody>
             </table>
-            <div class="code-block">
-                <pre id="tracksCode">Loading playlist…</pre>
-            </div>
-        </section>
+        </div>
 
-        <script src="tracks.js"></script>
-        <script>
-            const tbody = document.getElementById('tracksBody');
-            const code = document.getElementById('tracksCode');
-            if (typeof TRACKS === 'undefined') {
-                tbody.innerHTML = '<tr><td colspan="4">TRACKS not found (tracks.js missing)</td></tr>';
-                code.textContent = 'TRACKS not found. Place tracks.js next to this file.';
-            } else {
-                TRACKS.forEach((t, i) => {
-                    const tr = document.createElement('tr');
-                    const n = document.createElement('td'); n.textContent = String(i+1);
-                    const title = document.createElement('td'); title.textContent = t.title;
-                    const singer = document.createElement('td'); singer.textContent = t.singer;
-                    const year = document.createElement('td'); year.textContent = t.year || '';
-                    tr.append(n, title, singer, year);
-                    tbody.appendChild(tr);
-                });
-                code.textContent = 'const TRACKS = ' + JSON.stringify(TRACKS, null, 4) + ';';
-            }
-        </script>
-
-        <div class="footer">Use this page to review the playlist metadata and confirm the current array items in the player.</div>
+        <div class="box">
+            <pre id="arrayCode"></pre>
+        </div>
     </main>
+
+    <script src="tracks.js"></script>
+
+    <script>
+        const body = document.getElementById("tableBody");
+        const code = document.getElementById("arrayCode");
+
+        TRACKS.forEach((track, index) => {
+            const row = document.createElement("tr");
+
+            [
+                String(index + 1),
+                track.title,
+                track.singer,
+                track.year,
+                track.file
+            ].forEach((value) => {
+                const cell = document.createElement("td");
+                cell.textContent = value || "";
+                row.appendChild(cell);
+            });
+
+            body.appendChild(row);
+        });
+
+        code.textContent =
+            "const TRACKS = " +
+            JSON.stringify(TRACKS, null, 4) +
+            ";";
+    </script>
+
 </body>
 
 </html>

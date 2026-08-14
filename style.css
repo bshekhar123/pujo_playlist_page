@@ -1,0 +1,1882 @@
+:root {
+    --cream: #fff7e9;
+    --muted: rgba(255, 247, 233, .62);
+    --soft: rgba(255, 247, 233, .35);
+    --line: rgba(255, 247, 233, .14);
+
+    --radio: rgba(46, 31, 25, .74);
+    --radio-dark: rgba(24, 17, 14, .88);
+    --brass: #c49a61;
+    --red: #a6473a;
+
+    --ui: "Manrope", sans-serif;
+    --serif: "Cormorant Garamond", Georgia, serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #120d0b;
+    color: var(--cream);
+    font-family: var(--ui);
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+img {
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+button,
+input {
+    font: inherit;
+}
+
+button {
+    color: inherit;
+}
+
+.site {
+    position: relative;
+    width: 100%;
+    height: 100svh;
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   BACKGROUND
+   ===================================================== */
+
+.background {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+    overflow: hidden;
+}
+
+.background__image {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 1;
+    transition: opacity .35s ease;
+}
+
+.background__image.is-fading {
+    opacity: 0;
+}
+
+.background__shade {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 1;
+    background: rgba(0, 0, 0, .411);
+    pointer-events: none;
+}
+
+.black-fade {
+    position: absolute;
+    inset: 0;
+    display: block;
+    z-index: 2;
+    background: rgba(0, 0, 0, .22);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .28s ease;
+}
+
+
+/* =====================================================
+   TIME
+   ===================================================== */
+
+.time-block {
+    position: absolute;
+    z-index: 5;
+    top: 27px;
+    left: 30px;
+    display: grid;
+    gap: 3px;
+    text-shadow: 0 4px 18px rgba(0, 0, 0, .45);
+}
+
+.time-block__clock {
+    font-family: "Manrope", "Segoe UI", sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: .9;
+    letter-spacing: .04em;
+    font-variant-numeric: tabular-nums;
+}
+
+.time-block__countdown {
+    font-family: "Manrope", "Segoe UI", sans-serif;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .12em;
+}
+
+
+/* =====================================================
+   PROFILE
+   ===================================================== */
+
+.profile-button {
+    position: absolute;
+    z-index: 7;
+    top: 23px;
+    right: 27px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 9px 7px 7px;
+    border: 1px solid rgba(255, 247, 233, .15);
+    border-radius: 999px;
+    background: rgba(25, 17, 14, .28);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    cursor: pointer;
+}
+
+.profile-button__avatar {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 247, 233, .12);
+    font-family: var(--serif);
+    font-weight: 700;
+}
+
+.profile-button__name {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.profile-button__arrow {
+    color: var(--muted);
+}
+
+.overlay {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    visibility: hidden;
+    opacity: 0;
+    background: rgba(4, 3, 3, .50);
+    transition: .2s ease;
+}
+
+.overlay.is-open {
+    visibility: visible;
+    opacity: 1;
+}
+
+.profile-card {
+    position: fixed;
+    z-index: 25;
+    top: 76px;
+    right: 27px;
+    width: min(390px, calc(100vw - 30px));
+    padding: 26px;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    border: 1px solid var(--line);
+    border-radius: 23px;
+    background: rgba(25, 18, 15, .91);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, .38);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    transition: .22s ease;
+}
+
+.profile-card.is-open {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.profile-card__kicker,
+.playlist__kicker {
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    color: var(--soft);
+}
+
+.profile-card h2,
+.playlist h2 {
+    margin: 7px 0 0;
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 600;
+    line-height: .9;
+}
+
+.profile-card__role {
+    margin: 12px 0 0;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.profile-card__bio {
+    margin: 16px 0 22px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.profile-card a {
+    display: block;
+    padding: 13px 0;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 10px;
+    text-decoration: none;
+}
+
+.profile-card a strong {
+    display: block;
+    margin-top: 3px;
+    color: var(--cream);
+    font-size: 11px;
+}
+
+.close-button {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .04);
+    cursor: pointer;
+    font-size: 19px;
+}
+
+
+/* =====================================================
+   RETRO GLASS RADIO PLAYER
+   ===================================================== */
+
+.player-wrap {
+    position: absolute;
+    z-index: 10;
+    left: 50%;
+    bottom: 22px;
+    width: min(1080px, calc(100vw - 40px));
+    transform: translateX(-50%);
+}
+
+
+/* RADIO BODY */
+
+.radio {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        108px minmax(250px, 1fr) 150px 270px;
+
+    align-items: center;
+
+    gap: 22px;
+
+    min-height: 146px;
+
+    padding: 18px 20px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(255, 238, 211, .22);
+    border-radius: 26px;
+
+    background:
+        linear-gradient(115deg,
+            rgba(205, 147, 92, .13),
+            transparent 25%,
+            transparent 72%,
+            rgba(103, 59, 35, .15)),
+        rgba(38, 25, 20, .70);
+
+    box-shadow:
+        0 28px 70px rgba(0, 0, 0, .42),
+        0 8px 24px rgba(0, 0, 0, .16),
+        inset 0 1px 0 rgba(255, 255, 255, .16),
+        inset 0 -1px 0 rgba(0, 0, 0, .30);
+
+    backdrop-filter:
+        blur(22px) saturate(1.15);
+
+    -webkit-backdrop-filter:
+        blur(22px) saturate(1.15);
+}
+
+
+/* GLASS REFLECTION */
+
+.radio::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    background:
+        linear-gradient(120deg,
+            rgba(255, 255, 255, .09),
+            transparent 22%,
+            transparent 76%,
+            rgba(255, 199, 124, .025));
+
+    opacity: .8;
+}
+
+
+/* INNER BRASS LINE */
+
+.radio::after {
+    content: "";
+
+    position: absolute;
+    inset: 5px;
+
+    z-index: 0;
+
+    pointer-events: none;
+
+    border: 1px solid rgba(213, 163, 100, .07);
+    border-radius: 21px;
+}
+
+
+/* =====================================================
+   ALBUM ART
+   ===================================================== */
+
+.radio__art {
+    position: relative;
+    z-index: 2;
+
+    width: 104px;
+    height: 104px;
+
+    padding: 5px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(240, 192, 127, .38);
+    border-radius: 19px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 234, 201, .16),
+            rgba(38, 22, 17, .15));
+
+    box-shadow:
+        0 10px 28px rgba(0, 0, 0, .28),
+        inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+
+.radio__art img {
+    position: relative;
+    z-index: 2;
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    border-radius: 14px;
+}
+
+.radio__art-fallback {
+    position: absolute;
+    inset: 5px;
+
+    display: grid;
+    place-content: end start;
+
+    padding: 10px;
+
+    border-radius: 14px;
+
+    background:
+        radial-gradient(circle at 70% 20%,
+            rgba(209, 134, 74, .36),
+            transparent 40%),
+        linear-gradient(145deg,
+            #71372d,
+            #2a1915);
+}
+
+.radio__art-fallback small {
+    font-size: 6px;
+    letter-spacing: .18em;
+}
+
+.radio__art-fallback strong {
+    font-family: var(--serif);
+    font-size: 22px;
+}
+
+
+/* =====================================================
+   TRACK INFORMATION
+   ===================================================== */
+
+.radio__main {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+}
+
+.radio__station {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    color: rgba(240, 203, 154, .72);
+
+    font-size: 7px;
+    font-weight: 800;
+    letter-spacing: .19em;
+}
+
+.radio__light {
+    width: 7px;
+    height: 7px;
+
+    flex: 0 0 auto;
+
+    border-radius: 50%;
+
+    background: #db754f;
+
+    box-shadow:
+        0 0 7px rgba(238, 121, 75, .75),
+        0 0 15px rgba(238, 121, 75, .32);
+}
+
+.radio.is-playing .radio__light {
+    animation: radio-light 1.25s ease-in-out infinite alternate;
+}
+
+@keyframes radio-light {
+    from {
+        opacity: .65;
+    }
+
+    to {
+        opacity: 1;
+
+        box-shadow:
+            0 0 8px rgba(238, 121, 75, .90),
+            0 0 18px rgba(238, 121, 75, .50);
+    }
+}
+
+.radio__track {
+    min-width: 0;
+    margin-top: 8px;
+}
+
+.radio__track h1 {
+    margin: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: #fff1db;
+
+    font-family: var(--serif);
+
+    font-size: clamp(27px, 2vw, 34px);
+    font-weight: 600;
+    line-height: .98;
+
+    letter-spacing: -.02em;
+
+    text-shadow: 0 3px 15px rgba(0, 0, 0, .24);
+}
+
+.radio__track p {
+    margin: 7px 0 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    color: rgba(255, 237, 215, .60);
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   PROGRESS
+   ===================================================== */
+
+.radio__progress {
+    display: grid;
+
+    grid-template-columns:
+        34px minmax(100px, 1fr) 34px;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-top: 17px;
+
+    color: rgba(255, 239, 219, .48);
+
+    font-size: 8px;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.radio__progress span:last-child {
+    text-align: right;
+}
+
+.radio__progress input {
+    --pct: 0%;
+
+    width: 100%;
+    height: 4px;
+
+    margin: 0;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    border: 0;
+    border-radius: 999px;
+
+    outline: 0;
+
+    background:
+        linear-gradient(90deg,
+            #e4b36f var(--pct),
+            rgba(255, 239, 219, .16) var(--pct));
+
+    cursor: pointer;
+}
+
+.radio__progress input::-webkit-slider-thumb {
+    width: 11px;
+    height: 11px;
+
+    appearance: none;
+    -webkit-appearance: none;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f7d79e;
+
+    box-shadow:
+        0 0 0 3px rgba(228, 179, 111, .06),
+        0 2px 6px rgba(0, 0, 0, .25);
+
+    cursor: pointer;
+}
+
+.radio__progress input::-moz-range-thumb {
+    width: 11px;
+    height: 11px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f7d79e;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   RETRO HARDWARE
+   ===================================================== */
+
+.radio__speaker {
+    position: relative;
+    z-index: 2;
+
+    width: 150px;
+    height: 108px;
+
+    display: grid;
+
+    grid-template-rows:
+        46px minmax(0, 1fr);
+
+    gap: 8px;
+
+    padding: 8px;
+
+    border-left: 1px solid rgba(255, 241, 220, .08);
+}
+
+
+/* SPEAKER GRILLE */
+
+.radio__grille {
+    display: grid;
+    align-content: center;
+
+    gap: 5px;
+
+    padding: 4px 8px;
+}
+
+.radio__grille span {
+    display: block;
+
+    height: 4px;
+
+    border: 1px solid rgba(255, 240, 215, .055);
+    border-radius: 999px;
+
+    background:
+        linear-gradient(90deg,
+            rgba(7, 5, 4, .70),
+            rgba(10, 7, 5, .38));
+
+    box-shadow:
+        inset 0 1px 1px rgba(0, 0, 0, .5);
+}
+
+
+/* ANALOG METER */
+
+.radio__meter {
+    position: relative;
+
+    height: 45px;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(223, 174, 109, .28);
+    border-radius: 12px 12px 10px 10px;
+
+    background:
+        linear-gradient(180deg,
+            #d9aa68 0%,
+            #e4be82 44%,
+            #a97843 100%);
+
+    box-shadow:
+        inset 0 2px 7px rgba(62, 30, 9, .42),
+        0 4px 12px rgba(0, 0, 0, .20);
+}
+
+.radio__meter::before {
+    content: "7   5   3   1   0   1   3";
+
+    position: absolute;
+
+    top: 4px;
+    left: 50%;
+
+    width: 90%;
+
+    transform: translateX(-50%);
+
+    color: rgba(64, 34, 18, .75);
+
+    font-family: Georgia, serif;
+    font-size: 6px;
+
+    text-align: center;
+
+    letter-spacing: .18em;
+}
+
+.radio__meter-scale {
+    position: absolute;
+
+    left: 15%;
+    right: 15%;
+    bottom: 9px;
+
+    height: 17px;
+
+    border-top: 1px solid rgba(76, 38, 17, .42);
+    border-radius: 50%;
+}
+
+.radio__meter-scale i {
+    position: absolute;
+
+    bottom: 7px;
+
+    width: 1px;
+    height: 6px;
+
+    transform-origin: bottom;
+
+    background: rgba(64, 32, 13, .55);
+}
+
+.radio__meter-scale i:nth-child(1) {
+    left: 8%;
+    transform: rotate(-24deg);
+}
+
+.radio__meter-scale i:nth-child(2) {
+    left: 29%;
+    transform: rotate(-11deg);
+}
+
+.radio__meter-scale i:nth-child(3) {
+    left: 50%;
+}
+
+.radio__meter-scale i:nth-child(4) {
+    left: 71%;
+    transform: rotate(11deg);
+}
+
+.radio__meter-scale i:nth-child(5) {
+    left: 92%;
+    transform: rotate(24deg);
+}
+
+.radio__needle {
+    position: absolute;
+
+    z-index: 2;
+
+    left: 50%;
+    bottom: 3px;
+
+    width: 1px;
+    height: 27px;
+
+    transform: rotate(-13deg);
+    transform-origin: bottom center;
+
+    background: #6f241c;
+
+    box-shadow: 0 0 2px rgba(91, 25, 17, .5);
+}
+
+.radio.is-playing .radio__needle {
+    animation: meter-needle 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes meter-needle {
+    0% {
+        transform: rotate(-18deg);
+    }
+
+    40% {
+        transform: rotate(5deg);
+    }
+
+    70% {
+        transform: rotate(-5deg);
+    }
+
+    100% {
+        transform: rotate(16deg);
+    }
+}
+
+.radio__meter small {
+    position: absolute;
+
+    left: 50%;
+    bottom: 2px;
+
+    transform: translateX(-50%);
+
+    color: rgba(62, 31, 16, .70);
+
+    font-size: 4px;
+    font-weight: 800;
+
+    letter-spacing: .15em;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   PLAYER CONTROLS
+   ===================================================== */
+
+.radio__controls {
+    position: relative;
+    z-index: 2;
+
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        46px 72px 46px 46px;
+
+    grid-template-rows:
+        72px 38px;
+
+    align-items: center;
+    justify-content: end;
+
+    gap: 9px;
+}
+
+.round-button,
+.play-button,
+.playlist-button {
+    border: 1px solid rgba(255, 239, 216, .14);
+
+    outline: 0;
+
+    cursor: pointer;
+
+    transition:
+        transform .16s ease,
+        background .16s ease,
+        border-color .16s ease,
+        box-shadow .16s ease,
+        color .16s ease;
+}
+
+
+/* ROUND BUTTONS */
+
+.round-button {
+    width: 46px;
+    height: 46px;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 255, 255, .03),
+            rgba(0, 0, 0, .08)),
+        rgba(17, 11, 9, .30);
+
+    color: rgba(255, 239, 219, .72);
+
+    font-size: 11px;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+.round-button:hover {
+    transform: translateY(-1px);
+
+    border-color: rgba(231, 188, 126, .30);
+
+    background: rgba(255, 255, 255, .06);
+}
+
+.round-button:active {
+    transform: scale(.95);
+}
+
+.round-button.is-active {
+    color: #f3cc94;
+
+    border-color: rgba(218, 166, 102, .35);
+
+    background: rgba(176, 113, 58, .08);
+}
+
+
+/* PLAY BUTTON */
+
+.play-button {
+    width: 72px;
+    height: 72px;
+
+    display: grid;
+    place-items: center;
+
+    padding: 0;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(circle at 35% 30%,
+            #fff2d8,
+            #e9c899 64%,
+            #c99b61 100%);
+
+    color: #211510;
+
+    border-color: rgba(255, 227, 184, .72);
+
+    box-shadow:
+        0 0 0 5px rgba(111, 67, 38, .24),
+        0 9px 20px rgba(0, 0, 0, .24),
+        inset 0 1px 0 rgba(255, 255, 255, .75),
+        inset 0 -3px 6px rgba(118, 70, 37, .15);
+}
+
+.play-button:hover {
+    transform: scale(1.035);
+
+    box-shadow:
+        0 0 0 5px rgba(111, 67, 38, .30),
+        0 10px 25px rgba(0, 0, 0, .30),
+        inset 0 1px 0 rgba(255, 255, 255, .75);
+}
+
+.play-button:active {
+    transform: scale(.96);
+}
+
+.play-button #playLabel {
+    display: none;
+}
+
+.play-button #playIcon {
+    display: block;
+
+    margin-left: 3px;
+
+    font-size: 19px;
+    line-height: 1;
+}
+
+.radio.is-playing .play-button #playIcon {
+    margin-left: 0;
+}
+
+
+/* PLAYLIST BUTTON */
+
+.playlist-button {
+    grid-column: 1 / -1;
+
+    width: 100%;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(180deg,
+            rgba(255, 255, 255, .035),
+            rgba(255, 255, 255, .015));
+
+    color: rgba(255, 232, 203, .63);
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: .15em;
+}
+
+.playlist-button::before {
+    content: "☷";
+
+    color: #e1b579;
+
+    font-size: 14px;
+
+    letter-spacing: 0;
+}
+
+.playlist-button:hover {
+    border-color: rgba(221, 176, 114, .25);
+
+    color: #f1d2a5;
+
+    background: rgba(255, 255, 255, .055);
+}
+
+
+/* =====================================================
+   TABLET / SMALL DESKTOP PLAYER
+   ===================================================== */
+
+@media (min-width: 761px) and (max-width: 1050px) {
+
+    .player-wrap {
+        width: calc(100vw - 32px);
+    }
+
+    .radio {
+        grid-template-columns:
+            100px minmax(220px, 1fr) 250px;
+
+        gap: 18px;
+    }
+
+    .radio__speaker {
+        display: none;
+    }
+}
+
+
+/* =====================================================
+   PLAYLIST
+   ===================================================== */
+
+.playlist {
+    position: fixed;
+    z-index: 24;
+    left: 50%;
+    bottom: 174px;
+
+    width: min(760px, calc(100vw - 90px));
+    max-height: min(52vh, 500px);
+
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+
+    visibility: hidden;
+    opacity: 0;
+
+    overflow: hidden;
+
+    transform: translate(-50%, 20px);
+
+    border: 1px solid var(--line);
+    border-radius: 22px;
+
+    background: rgba(25, 18, 15, .94);
+
+    box-shadow: 0 30px 90px rgba(0, 0, 0, .48);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    transition: .22s ease;
+}
+
+.playlist.is-open {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.playlist__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    padding: 20px;
+}
+
+.playlist__top p {
+    margin: 7px 0 0;
+
+    color: var(--soft);
+
+    font-size: 9px;
+}
+
+.playlist__tools {
+    display: grid;
+
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    gap: 8px;
+
+    padding: 0 20px 13px;
+}
+
+.playlist__tools input,
+.playlist__tools button {
+    height: 40px;
+
+    border: 1px solid var(--line);
+    border-radius: 11px;
+
+    background: rgba(255, 255, 255, .04);
+
+    color: var(--cream);
+}
+
+.playlist__tools input {
+    padding: 0 13px;
+    outline: 0;
+}
+
+.playlist__tools button {
+    padding: 0 14px;
+
+    cursor: pointer;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: .10em;
+
+    text-transform: uppercase;
+}
+
+.playlist__head,
+.track-row {
+    display: grid;
+
+    grid-template-columns:
+        34px minmax(0, 1.3fr) minmax(150px, .8fr) 55px;
+
+    gap: 13px;
+
+    align-items: center;
+}
+
+.playlist__head {
+    padding: 10px 20px;
+
+    border-top: 1px solid rgba(255, 247, 233, .06);
+    border-bottom: 1px solid rgba(255, 247, 233, .06);
+
+    color: var(--soft);
+
+    font-size: 7px;
+    font-weight: 800;
+
+    letter-spacing: .14em;
+
+    text-transform: uppercase;
+}
+
+.playlist__head span:last-child {
+    text-align: right;
+}
+
+.track-list {
+    min-height: 0;
+
+    overflow-y: auto;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        rgba(233, 185, 108, .8) rgba(255, 255, 255, .04);
+}
+
+.track-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.track-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, .04);
+    border-radius: 999px;
+}
+
+.track-list::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 999px;
+
+    background:
+        linear-gradient(180deg,
+            rgba(240, 198, 118, .95),
+            rgba(166, 114, 52, .8));
+
+    background-clip: padding-box;
+}
+
+.track-list::-webkit-scrollbar-thumb:hover {
+    background:
+        linear-gradient(180deg,
+            rgba(248, 210, 145, .98),
+            rgba(181, 129, 70, .86));
+
+    background-clip: padding-box;
+}
+
+.track-row {
+    width: 100%;
+
+    padding: 12px 20px;
+
+    border: 0;
+    border-bottom: 1px solid rgba(255, 247, 233, .05);
+
+    background: transparent;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.track-row:hover,
+.track-row.is-active {
+    background: rgba(255, 255, 255, .045);
+}
+
+.track-row.is-active .track-title {
+    color: #f4d9ad;
+}
+
+.track-number {
+    color: var(--soft);
+
+    font-size: 8px;
+
+    text-align: center;
+}
+
+.track-title,
+.track-artist,
+.track-year {
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+}
+
+.track-title {
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.track-artist,
+.track-year {
+    color: var(--muted);
+
+    font-size: 9px;
+}
+
+.track-year {
+    text-align: right;
+}
+
+.empty-row {
+    padding: 40px 20px;
+
+    text-align: center;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+
+.toast {
+    position: fixed;
+    z-index: 40;
+
+    left: 50%;
+    bottom: 180px;
+
+    max-width: calc(100vw - 30px);
+
+    padding: 9px 13px;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform: translate(-50%, 8px);
+
+    border: 1px solid var(--line);
+    border-radius: 999px;
+
+    background: rgba(20, 14, 12, .93);
+
+    font-size: 9px;
+
+    transition: .18s ease;
+}
+
+.toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+
+/* =====================================================
+   MOBILE
+   ===================================================== */
+
+@media (max-width: 760px) {
+
+    .background__image {
+        object-position: center top;
+    }
+
+
+    /* =====================================================
+       MOBILE CLOCK
+       ===================================================== */
+
+    .time-block {
+        top: 18px;
+        left: 18px;
+
+        width: auto;
+
+        transform: none;
+
+        justify-items: start;
+
+        text-align: left;
+    }
+
+    .time-block__clock {
+        font-family: "Manrope", "Segoe UI", sans-serif;
+
+        font-size: clamp(28px, 7vw, 38px);
+
+        font-weight: 800;
+        line-height: 1;
+
+        letter-spacing: .04em;
+
+        font-variant-numeric: tabular-nums;
+    }
+
+    .time-block__countdown {
+        font-family: "Manrope", "Segoe UI", sans-serif;
+
+        font-size: 9px;
+
+        letter-spacing: .12em;
+
+        font-weight: 700;
+    }
+
+
+    /* =====================================================
+       MOBILE PROFILE
+       ===================================================== */
+
+    .profile-button {
+        top: 14px;
+        right: 14px;
+
+        padding: 5px;
+    }
+
+    .profile-button__avatar {
+        width: 30px;
+        height: 30px;
+    }
+
+    .profile-button__name,
+    .profile-button__arrow {
+        display: none;
+    }
+
+    .profile-card {
+        top: auto;
+
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+
+        width: auto;
+
+        border-radius: 22px;
+
+        transform: translateY(16px);
+    }
+
+    .profile-card.is-open {
+        transform: translateY(0);
+    }
+
+
+    /* =====================================================
+       MOBILE RETRO GLASS PLAYER
+       ===================================================== */
+
+    .player-wrap {
+        left: 50%;
+
+        bottom: max(8px,
+                env(safe-area-inset-bottom));
+
+        width: calc(100vw - 16px);
+
+        transform: translateX(-50%);
+    }
+
+    .radio {
+        grid-template-columns:
+            64px minmax(0, 1fr) 102px;
+
+        grid-template-rows: auto;
+
+        align-items: center;
+
+        gap: 10px;
+
+        min-height: 104px;
+
+        padding: 10px;
+
+        overflow: hidden;
+
+        border-radius: 20px;
+
+        background:
+            linear-gradient(110deg,
+                rgba(197, 133, 77, .12),
+                transparent 38%),
+            rgba(40, 25, 20, .74);
+
+        box-shadow:
+            0 15px 36px rgba(0, 0, 0, .42),
+            inset 0 1px 0 rgba(255, 255, 255, .13);
+
+        backdrop-filter:
+            blur(18px) saturate(1.12);
+
+        -webkit-backdrop-filter:
+            blur(18px) saturate(1.12);
+    }
+
+    .radio::before {
+        background:
+            linear-gradient(115deg,
+                rgba(255, 255, 255, .08),
+                transparent 30%,
+                transparent 78%,
+                rgba(214, 154, 93, .03));
+    }
+
+    .radio::after {
+        inset: 3px;
+
+        border-radius: 17px;
+    }
+
+
+    /* MOBILE ARTWORK */
+
+    .radio__art {
+        width: 64px;
+        height: 64px;
+
+        padding: 3px;
+
+        border-radius: 14px;
+    }
+
+    .radio__art img {
+        border-radius: 10px;
+    }
+
+    .radio__art-fallback {
+        inset: 3px;
+
+        padding: 6px;
+
+        border-radius: 10px;
+    }
+
+    .radio__art-fallback small {
+        font-size: 4px;
+    }
+
+    .radio__art-fallback strong {
+        font-size: 14px;
+    }
+
+
+    /* MOBILE SONG INFO */
+
+    .radio__main {
+        align-self: center;
+
+        min-width: 0;
+    }
+
+    .radio__station {
+        gap: 5px;
+
+        font-size: 5px;
+
+        letter-spacing: .16em;
+    }
+
+    .radio__light {
+        width: 5px;
+        height: 5px;
+    }
+
+    .radio__track {
+        margin-top: 5px;
+    }
+
+    .radio__track h1 {
+        font-size: clamp(16px, 4.8vw, 20px);
+
+        line-height: 1;
+    }
+
+    .radio__track p {
+        max-width: 100%;
+
+        margin-top: 4px;
+
+        color: rgba(255, 239, 218, .55);
+
+        font-size: 6.5px;
+    }
+
+
+    /* MOBILE PROGRESS */
+
+    .radio__progress {
+        grid-template-columns:
+            22px minmax(25px, 1fr) 22px;
+
+        gap: 5px;
+
+        margin-top: 9px;
+
+        font-size: 5.5px;
+    }
+
+    .radio__progress input {
+        height: 3px;
+    }
+
+    .radio__progress input::-webkit-slider-thumb {
+        width: 9px;
+        height: 9px;
+    }
+
+    .radio__progress input::-moz-range-thumb {
+        width: 9px;
+        height: 9px;
+    }
+
+
+    /* HIDE RETRO METER ON MOBILE */
+
+    .radio__speaker {
+        display: none;
+    }
+
+
+    /* MOBILE CONTROLS */
+
+    .radio__controls {
+        grid-template-columns:
+            27px 45px 27px;
+
+        grid-template-rows:
+            48px 21px;
+
+        align-content: center;
+        align-items: center;
+        justify-content: center;
+
+        gap: 4px 2px;
+
+        width: 101px;
+
+        min-width: 0;
+    }
+
+    .round-button {
+        width: 27px;
+        height: 27px;
+
+        padding: 0;
+
+        border-color: rgba(255, 239, 216, .10);
+
+        font-size: 8px;
+    }
+
+    .round-button:hover {
+        transform: none;
+    }
+
+    .play-button {
+        width: 45px;
+        height: 45px;
+
+        padding: 0;
+
+        border-radius: 50%;
+
+        box-shadow:
+            0 0 0 3px rgba(111, 67, 38, .22),
+            0 6px 15px rgba(0, 0, 0, .24),
+            inset 0 1px 0 rgba(255, 255, 255, .72);
+    }
+
+    .play-button:hover {
+        transform: none;
+    }
+
+    .play-button #playLabel {
+        display: none;
+    }
+
+    .play-button #playIcon {
+        margin-left: 2px;
+
+        font-size: 13px;
+    }
+
+    .radio.is-playing .play-button #playIcon {
+        margin-left: 0;
+    }
+
+    #loopButton {
+        display: none;
+    }
+
+    .playlist-button {
+        grid-column: 1 / -1;
+
+        width: 100%;
+        height: 21px;
+
+        padding: 0;
+
+        border: 0;
+
+        background: transparent;
+
+        color: rgba(238, 199, 146, .65);
+
+        font-size: 0;
+
+        letter-spacing: 0;
+    }
+
+    .playlist-button span {
+        display: none;
+    }
+
+    .playlist-button::before {
+        content: "☷  PLAYLIST";
+
+        color: rgba(238, 199, 146, .72);
+
+        font-size: 6px;
+        font-weight: 800;
+
+        letter-spacing: .10em;
+    }
+
+    .playlist-button:hover {
+        background: transparent;
+    }
+
+
+    /* =====================================================
+       MOBILE PLAYLIST PANEL
+       ===================================================== */
+
+    .playlist {
+        bottom: 122px;
+
+        width: calc(100vw - 16px);
+
+        max-height: calc(100svh - 160px);
+
+        border-radius: 19px;
+    }
+
+    .playlist__top {
+        padding: 16px 14px 13px;
+    }
+
+    .playlist__tools {
+        padding: 0 14px 11px;
+    }
+
+    .playlist__tools button {
+        width: 44px;
+
+        padding: 0;
+
+        overflow: hidden;
+
+        font-size: 0;
+    }
+
+    .playlist__tools button::after {
+        content: "▶";
+
+        font-size: 12px;
+    }
+
+    .playlist__head {
+        display: none;
+    }
+
+    .track-row {
+        grid-template-columns:
+            28px minmax(0, 1fr) 44px;
+
+        gap: 8px;
+
+        padding: 11px 14px;
+    }
+
+    .track-artist {
+        grid-column: 2;
+        grid-row: 2;
+
+        display: block;
+
+        margin-top: -5px;
+
+        font-size: 7px;
+    }
+
+    .track-year {
+        grid-column: 3;
+        grid-row: 1 / span 2;
+
+        align-self: center;
+    }
+
+    .toast {
+        bottom: 128px;
+    }
+}
+
+
+/* =====================================================
+   VERY SMALL MOBILE
+   ===================================================== */
+
+@media (max-width: 380px) {
+
+    .player-wrap {
+        width: calc(100vw - 12px);
+    }
+
+    .radio {
+        grid-template-columns:
+            58px minmax(0, 1fr) 92px;
+
+        gap: 8px;
+
+        padding: 8px;
+
+        min-height: 96px;
+    }
+
+    .radio__art {
+        width: 58px;
+        height: 58px;
+    }
+
+    .radio__track h1 {
+        font-size: 16px;
+    }
+
+    .radio__track p {
+        font-size: 6px;
+    }
+
+    .radio__station {
+        font-size: 4.5px;
+    }
+
+    .radio__controls {
+        width: 92px;
+
+        grid-template-columns:
+            24px 42px 24px;
+
+        grid-template-rows:
+            45px 20px;
+
+        gap: 3px 1px;
+    }
+
+    .round-button {
+        width: 24px;
+        height: 24px;
+
+        font-size: 7px;
+    }
+
+    .play-button {
+        width: 42px;
+        height: 42px;
+    }
+
+    .play-button #playIcon {
+        font-size: 12px;
+    }
+
+    .radio__progress {
+        grid-template-columns:
+            19px minmax(18px, 1fr) 19px;
+
+        gap: 3px;
+
+        margin-top: 7px;
+
+        font-size: 5px;
+    }
+}
+
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
