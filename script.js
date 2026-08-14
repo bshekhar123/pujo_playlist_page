@@ -205,8 +205,29 @@
     }
 
     function updateLiveCount() {
-        const nextValue = Math.floor(Math.random() * 21) + 18;
-        liveCount.textContent = String(nextValue);
+        const sessionId = sessionStorage.getItem("pujo-session-id") || "";
+
+        if (!sessionId) {
+            const generated = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+            sessionStorage.setItem("pujo-session-id", generated);
+        }
+
+        fetch("/api/online", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                event: "heartbeat",
+                sessionId: sessionStorage.getItem("pujo-session-id") || "unknown"
+            })
+        })
+            .then((response) => response.ok ? response.json() : null)
+            .then((payload) => {
+                if (!payload || !Number.isFinite(payload.live)) return;
+                liveCount.textContent = String(payload.live);
+            })
+            .catch(() => {
+                liveCount.textContent = "--";
+            });
     }
 
     /* =====================================================
@@ -547,9 +568,27 @@
     setPlaying(false);
 
     updateTime();
+    updateLiveCount();
     switchBackground(true);
 
     setInterval(updateTime, 1000);
+    setInterval(updateLiveCount, 15000);
     setInterval(switchBackground, 30000);
+
+    const aliveSessionId = sessionStorage.getItem("pujo-session-id") || "";
+
+    if (aliveSessionId) {
+        const leaveSignal = () => {
+            navigator.sendBeacon && navigator.sendBeacon("/api/online", JSON.stringify({
+                event: "leave",
+                sessionId: aliveSessionId
+            }));
+        };
+
+        window.addEventListener("beforeunload", leaveSignal);
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "hidden") leaveSignal();
+        });
+    }
 
 })();
