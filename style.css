@@ -139,6 +139,55 @@ button {
    PROFILE
    ===================================================== */
 
+.live-indicator {
+    position: absolute;
+    z-index: 7;
+    top: 26px;
+    right: 250px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 11px 7px 9px;
+    border: 1px solid rgba(115, 226, 148, .28);
+    border-radius: 999px;
+    background: rgba(15, 22, 17, .38);
+    box-shadow: 0 0 18px rgba(68, 215, 107, .18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    color: var(--cream);
+}
+
+.live-indicator__dot {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 50%;
+    background: #53e67b;
+    box-shadow: 0 0 10px rgba(83, 230, 123, .96), 0 0 18px rgba(83, 230, 123, .8);
+    animation: live-pulse 1.6s ease-in-out infinite;
+}
+
+.live-indicator__label {
+    color: var(--muted);
+    font-size: 8px;
+    letter-spacing: .14em;
+}
+
+@keyframes live-pulse {
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 8px rgba(83, 230, 123, .9), 0 0 16px rgba(83, 230, 123, .7);
+    }
+    50% {
+        transform: scale(1.18);
+        box-shadow: 0 0 12px rgba(83, 230, 123, 1), 0 0 22px rgba(83, 230, 123, .9);
+    }
+}
+
 .profile-button {
     position: absolute;
     z-index: 7;

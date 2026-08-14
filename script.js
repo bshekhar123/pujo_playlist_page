@@ -39,6 +39,7 @@
     const loopButton = $("#loopButton");
 
     const toast = $("#toast");
+    const liveCount = $("#liveCount");
 
     const mobile = window.matchMedia("(max-width: 760px)");
 
@@ -201,6 +202,11 @@
         } else {
             countdown.textContent = "PUJO IS HERE";
         }
+    }
+
+    function updateLiveCount() {
+        const nextValue = Math.floor(Math.random() * 21) + 18;
+        liveCount.textContent = String(nextValue);
     }
 
     /* =====================================================
