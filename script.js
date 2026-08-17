@@ -48,51 +48,15 @@
        ===================================================== */
 
     const SCENES = [
-        {
-            start: 0,
-            desktop: "images/1030pm_adda_desktop.png",
-            mobile: "images/1030pm_adda_mobile.png"
-        },
-        {
-            start: 2,
-            desktop: "images/0200am_goodnight_desktop.png",
-            mobile: "images/0200am_goodnight_mobile.png"
-        },
-        {
-            start: 8,
-            desktop: "images/0800am_morning_desktop.png",
-            mobile: "images/0800am_morning_mobile.png"
-        },
-        {
-            start: 10,
-            desktop: "images/1000am_anjali_desktop.png",
-            mobile: "images/1000am_anjali_mobile.png"
-        },
-        {
-            start: 13,
-            desktop: "images/0100pm_bhog_desktop.png",
-            mobile: "images/0100pm_bhog_mobile.png"
-        },
-        {
-            start: 16.5,
-            desktop: "images/0430pm_quiet_desktop.png",
-            mobile: "images/0430pm_quiet_mobile.png"
-        },
-        {
-            start: 18.5,
-            desktop: "images/0630pm_aarti_desktop.png",
-            mobile: "images/0630pm_aarti_mobile.png"
-        },
-        {
-            start: 20.5,
-            desktop: "images/0830pm_cultural_desktop.png",
-            mobile: "images/0830pm_cultural_mobile.png"
-        },
-        {
-            start: 22.5,
-            desktop: "images/1030pm_adda_desktop.png",
-            mobile: "images/1030pm_adda_mobile.png"
-        }
+        { start: 0, end: 2, desktop: "images/1030pm_adda_desktop.png", mobile: "images/1030pm_adda_mobile.png" },
+        { start: 2, end: 8, desktop: "images/0200am_goodnight_desktop.png", mobile: "images/0200am_goodnight_mobile.png" },
+        { start: 8, end: 10, desktop: "images/0800am_morning_desktop.png", mobile: "images/0800am_morning_mobile.png" },
+        { start: 10, end: 13, desktop: "images/1000am_anjali_desktop.png", mobile: "images/1000am_anjali_mobile.png" },
+        { start: 13, end: 16, desktop: "images/0100pm_bhog_desktop.png", mobile: "images/0100pm_bhog_mobile.png" },
+        { start: 16, end: 18.5, desktop: "images/0430pm_quiet_desktop.png", mobile: "images/0430pm_quiet_mobile.png" },
+        { start: 18.5, end: 20.5, desktop: "images/0630pm_aarti_desktop.png", mobile: "images/0630pm_aarti_mobile.png" },
+        { start: 20.5, end: 22.5, desktop: "images/0830pm_cultural_desktop.png", mobile: "images/0830pm_cultural_mobile.png" },
+        { start: 22.5, end: 24, desktop: "images/1030pm_adda_desktop.png", mobile: "images/1030pm_adda_mobile.png" }
     ];
 
     let activeBackground = "";
@@ -104,14 +68,14 @@
 
     function activeScene() {
         const hour = currentDecimalHour();
-        let selected = SCENES[0];
 
         for (const scene of SCENES) {
-            if (hour >= scene.start) selected = scene;
-            else break;
+            if (hour >= scene.start && hour < scene.end) {
+                return scene;
+            }
         }
 
-        return selected;
+        return SCENES[SCENES.length - 1];
     }
 
     function sceneSource(scene) {
@@ -204,30 +168,60 @@
         }
     }
 
-    function updateLiveCount() {
-        const sessionId = sessionStorage.getItem("pujo-session-id") || "";
+    const LISTENER_PERIODS = [
+        { start: 2 * 60, end: 5 * 60, min: 1, max: 8 },
+        { start: 5 * 60, end: 7 * 60, min: 5, max: 22 },
+        { start: 7 * 60, end: 9 * 60, min: 20, max: 65 },
+        { start: 9 * 60, end: 12 * 60, min: 45, max: 110 },
+        { start: 12 * 60, end: 15 * 60, min: 70, max: 145 },
+        { start: 15 * 60, end: 17 * 60, min: 90, max: 175 },
+        { start: 17 * 60, end: 19 * 60, min: 140, max: 215 },
+        { start: 19 * 60, end: 22.5 * 60, min: 185, max: 248 },
+        { start: 22.5 * 60, end: 24 * 60, min: 110, max: 190 },
+        { start: 0, end: 2 * 60, min: 20, max: 80 }
+    ];
 
-        if (!sessionId) {
-            const generated = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-            sessionStorage.setItem("pujo-session-id", generated);
+    let lastLiveCount = null;
+
+    function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+    }
+
+    function getListenerRangeForTime(date) {
+        const minutes = date.getHours() * 60 + date.getMinutes();
+
+        for (const period of LISTENER_PERIODS) {
+            if (minutes >= period.start && minutes < period.end) {
+                return period;
+            }
         }
 
-        fetch("/api/online", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                event: "heartbeat",
-                sessionId: sessionStorage.getItem("pujo-session-id") || "unknown"
-            })
-        })
-            .then((response) => response.ok ? response.json() : null)
-            .then((payload) => {
-                if (!payload || !Number.isFinite(payload.live)) return;
-                liveCount.textContent = String(payload.live);
-            })
-            .catch(() => {
-                liveCount.textContent = "--";
-            });
+        return { min: 20, max: 80 };
+    }
+
+    function simulateLiveCount(date) {
+        const range = getListenerRangeForTime(date);
+        const center = (range.min + range.max) / 2;
+        const minuteOfDay = date.getHours() * 60 + date.getMinutes();
+        const timeWave = Math.sin((minuteOfDay + 17) / 11) * ((range.max - range.min) * 0.2);
+        const target = clamp(Math.round(center + timeWave), range.min, range.max);
+
+        if (lastLiveCount === null) {
+            lastLiveCount = clamp(target, 1, 248);
+            return lastLiveCount;
+        }
+
+        const drift = clamp(target - lastLiveCount, -12, 12);
+        const adjusted = lastLiveCount + drift;
+
+        const nextValue = clamp(Math.round(adjusted), 1, 248);
+        lastLiveCount = nextValue;
+        return nextValue;
+    }
+
+    function updateLiveCount() {
+        const value = simulateLiveCount(new Date());
+        liveCount.textContent = String(value);
     }
 
     /* =====================================================
@@ -572,23 +566,7 @@
     switchBackground(true);
 
     setInterval(updateTime, 1000);
-    setInterval(updateLiveCount, 15000);
+    setInterval(updateLiveCount, 5 * 60 * 1000);
     setInterval(switchBackground, 30000);
-
-    const aliveSessionId = sessionStorage.getItem("pujo-session-id") || "";
-
-    if (aliveSessionId) {
-        const leaveSignal = () => {
-            navigator.sendBeacon && navigator.sendBeacon("/api/online", JSON.stringify({
-                event: "leave",
-                sessionId: aliveSessionId
-            }));
-        };
-
-        window.addEventListener("beforeunload", leaveSignal);
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "hidden") leaveSignal();
-        });
-    }
 
 })();
