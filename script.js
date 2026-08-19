@@ -168,70 +168,78 @@
         }
     }
 
-    const LIVE_SESSION_KEY = "pujo_live_session_id";
+    /* =====================================================
+       SIMULATED LIVE LISTENER COUNT
+       ===================================================== */
 
-    function makeSessionId() {
-        if (window.crypto && window.crypto.randomUUID) {
-            return window.crypto.randomUUID();
-        }
+    const LISTENER_SCHEDULE = [
+        { start: 0, end: 120, min: 20, max: 80 },        // 12 AM - 2 AM
+        { start: 120, end: 300, min: 1, max: 8 },         // 2 AM - 5 AM
+        { start: 300, end: 420, min: 5, max: 22 },        // 5 AM - 7 AM
+        { start: 420, end: 540, min: 20, max: 65 },       // 7 AM - 9 AM
+        { start: 540, end: 720, min: 45, max: 110 },      // 9 AM - 12 PM
+        { start: 720, end: 900, min: 70, max: 145 },      // 12 PM - 3 PM
+        { start: 900, end: 1020, min: 90, max: 175 },     // 3 PM - 5 PM
+        { start: 1020, end: 1140, min: 140, max: 215 },   // 5 PM - 7 PM
+        { start: 1140, end: 1350, min: 185, max: 248 },   // 7 PM - 10:30 PM
+        { start: 1350, end: 1440, min: 110, max: 190 }    // 10:30 PM - 12 AM
+    ];
 
-        return `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    function clamp(val, min, max) {
+        return Math.min(Math.max(val, min), max);
     }
 
-    function getOrCreateSessionId() {
-        let sessionId = sessionStorage.getItem(LIVE_SESSION_KEY);
-
-        if (!sessionId) {
-            sessionId = makeSessionId();
-            sessionStorage.setItem(LIVE_SESSION_KEY, sessionId);
-        }
-
-        return sessionId;
-    }
-
-    async function refreshLiveCount() {
-        const sessionId = getOrCreateSessionId();
-
-        try {
-            const response = await fetch("/api/online", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ event: "heartbeat", sessionId })
-            });
-
-            if (!response.ok) {
-                throw new Error(`Live count request failed with status ${response.status}`);
-            }
-
-            const payload = await response.json();
-            const value = Number(payload.live || 1);
-            liveCount.textContent = String(Math.max(1, Math.round(value)));
-        } catch (error) {
-            console.warn("Live count unavailable:", error);
-            if (!liveCount.textContent || Number(liveCount.textContent) < 1) {
-                liveCount.textContent = "1";
+    function getPeriodForMinute(minuteOfDay) {
+        for (const period of LISTENER_SCHEDULE) {
+            if (minuteOfDay >= period.start && minuteOfDay < period.end) {
+                return period;
             }
         }
+        return LISTENER_SCHEDULE[0];
     }
 
-    function leaveLiveSession() {
-        const sessionId = sessionStorage.getItem(LIVE_SESSION_KEY);
+    function getTargetCount(date) {
+        const minutes = date.getHours() * 60 + date.getMinutes();
+        const period = getPeriodForMinute(minutes);
 
-        if (!sessionId) return;
+        const progress = (minutes - period.start) / (period.end - period.start || 1);
+        const wave = Math.sin((minutes + 17) / 12) * 0.25;
+        const span = period.max - period.min;
+        const baseTarget = period.min + (progress * span * 0.7) + (span * 0.15) + (wave * span * 0.3);
 
-        const payload = JSON.stringify({ event: "leave", sessionId });
+        return clamp(Math.round(baseTarget), period.min, period.max);
+    }
 
-        if (navigator.sendBeacon) {
-            navigator.sendBeacon("/api/online", payload);
-            return;
+    let lastSimulatedCount = null;
+
+    function calculateSimulatedCount(date) {
+        const target = getTargetCount(date);
+
+        if (lastSimulatedCount === null) {
+            lastSimulatedCount = target;
+            return lastSimulatedCount;
         }
 
-        fetch("/api/online", {
-            method: "POST",
-            keepalive: true,
-            headers: { "Content-Type": "application/json" },
-            body: payload
-        }).catch(() => {});
+        const diff = target - lastSimulatedCount;
+        let step = 0;
+
+        if (Math.abs(diff) <= 2) {
+            const direction = Math.random() > 0.45 ? 1 : -1;
+            step = direction * Math.floor(2 + Math.random() * 3);
+        } else {
+            const maxStep = Math.min(Math.abs(diff), Math.floor(2 + Math.random() * 11));
+            step = Math.sign(diff) * Math.max(2, maxStep);
+        }
+
+        const next = clamp(lastSimulatedCount + step, 1, 248);
+        lastSimulatedCount = next;
+        return next;
+    }
+
+    function refreshLiveCount() {
+        if (!liveCount) return;
+        const value = calculateSimulatedCount(new Date());
+        liveCount.textContent = String(value);
     }
 
     /* =====================================================
@@ -575,10 +583,8 @@
     refreshLiveCount();
     switchBackground(true);
 
-    window.addEventListener("beforeunload", leaveLiveSession);
-
     setInterval(updateTime, 1000);
-    setInterval(refreshLiveCount, 15000);
+    setInterval(refreshLiveCount, 300000); // Update simulated count every 5 minutes
     setInterval(switchBackground, 30000);
 
 })();

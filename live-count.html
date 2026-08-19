@@ -124,22 +124,69 @@
     (() => {
       const countEl = document.getElementById('liveCount');
       const lastUpdatedEl = document.getElementById('lastUpdated');
-      const LIVE_SESSION_KEY = 'pujo_live_session_id';
 
-      function makeSessionId() {
-        if (window.crypto && window.crypto.randomUUID) {
-          return window.crypto.randomUUID();
-        }
-        return 'session-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+      const LISTENER_SCHEDULE = [
+        { start: 0, end: 120, min: 20, max: 80 },        // 12 AM - 2 AM
+        { start: 120, end: 300, min: 1, max: 8 },         // 2 AM - 5 AM
+        { start: 300, end: 420, min: 5, max: 22 },        // 5 AM - 7 AM
+        { start: 420, end: 540, min: 20, max: 65 },       // 7 AM - 9 AM
+        { start: 540, end: 720, min: 45, max: 110 },      // 9 AM - 12 PM
+        { start: 720, end: 900, min: 70, max: 145 },      // 12 PM - 3 PM
+        { start: 900, end: 1020, min: 90, max: 175 },     // 3 PM - 5 PM
+        { start: 1020, end: 1140, min: 140, max: 215 },   // 5 PM - 7 PM
+        { start: 1140, end: 1350, min: 185, max: 248 },   // 7 PM - 10:30 PM
+        { start: 1350, end: 1440, min: 110, max: 190 }    // 10:30 PM - 12 AM
+      ];
+
+      function clamp(val, min, max) {
+        return Math.min(Math.max(val, min), max);
       }
 
-      function getOrCreateSessionId() {
-        let sessionId = sessionStorage.getItem(LIVE_SESSION_KEY);
-        if (!sessionId) {
-          sessionId = makeSessionId();
-          sessionStorage.setItem(LIVE_SESSION_KEY, sessionId);
+      function getPeriodForMinute(minuteOfDay) {
+        for (const period of LISTENER_SCHEDULE) {
+          if (minuteOfDay >= period.start && minuteOfDay < period.end) {
+            return period;
+          }
         }
-        return sessionId;
+        return LISTENER_SCHEDULE[0];
+      }
+
+      function getTargetCount(date) {
+        const minutes = date.getHours() * 60 + date.getMinutes();
+        const period = getPeriodForMinute(minutes);
+
+        const progress = (minutes - period.start) / (period.end - period.start || 1);
+        const wave = Math.sin((minutes + 17) / 12) * 0.25;
+        const span = period.max - period.min;
+        const baseTarget = period.min + (progress * span * 0.7) + (span * 0.15) + (wave * span * 0.3);
+
+        return clamp(Math.round(baseTarget), period.min, period.max);
+      }
+
+      let lastSimulatedCount = null;
+
+      function calculateSimulatedCount(date) {
+        const target = getTargetCount(date);
+
+        if (lastSimulatedCount === null) {
+          lastSimulatedCount = target;
+          return lastSimulatedCount;
+        }
+
+        const diff = target - lastSimulatedCount;
+        let step = 0;
+
+        if (Math.abs(diff) <= 2) {
+          const direction = Math.random() > 0.45 ? 1 : -1;
+          step = direction * Math.floor(2 + Math.random() * 3);
+        } else {
+          const maxStep = Math.min(Math.abs(diff), Math.floor(2 + Math.random() * 11));
+          step = Math.sign(diff) * Math.max(2, maxStep);
+        }
+
+        const next = clamp(lastSimulatedCount + step, 1, 248);
+        lastSimulatedCount = next;
+        return next;
       }
 
       function formatClock(date) {
@@ -151,86 +198,15 @@
         });
       }
 
-      const sessionId = getOrCreateSessionId();
-
-      // Local multi-tab fallback active tab tracker (if backend API is unreachable)
-      const activeTabs = new Set([sessionId]);
-      let channel = null;
-
-      try {
-        if (typeof BroadcastChannel !== 'undefined') {
-          channel = new BroadcastChannel('pujo_live_tabs');
-          channel.onmessage = (event) => {
-            const data = event.data;
-            if (!data) return;
-            if (data.type === 'ping') {
-              activeTabs.add(data.id);
-              channel.postMessage({ type: 'pong', id: sessionId });
-            } else if (data.type === 'pong') {
-              activeTabs.add(data.id);
-            } else if (data.type === 'leave') {
-              activeTabs.delete(data.id);
-            }
-          };
-          channel.postMessage({ type: 'ping', id: sessionId });
-        }
-      } catch (e) {
-        console.warn('BroadcastChannel fallback setup warning:', e);
-      }
-
-      async function refreshLiveCount() {
+      function refresh() {
         const now = new Date();
-
-        try {
-          const response = await fetch('/api/online', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ event: 'heartbeat', sessionId })
-          });
-
-          if (!response.ok) {
-            throw new Error('Status ' + response.status);
-          }
-
-          const payload = await response.json();
-          const realLiveCount = Math.max(1, Math.round(Number(payload.live || 1)));
-          countEl.textContent = String(realLiveCount);
-          lastUpdatedEl.textContent = 'Updated ' + formatClock(now);
-        } catch (error) {
-          // If backend API endpoint is not active, fallback to actual open active tabs count
-          const fallbackCount = Math.max(1, activeTabs.size);
-          countEl.textContent = String(fallbackCount);
-          lastUpdatedEl.textContent = 'Updated ' + formatClock(now);
-        }
+        const value = calculateSimulatedCount(now);
+        countEl.textContent = String(value);
+        lastUpdatedEl.textContent = 'Updated ' + formatClock(now);
       }
 
-      function leaveLiveSession() {
-        if (channel) {
-          try {
-            channel.postMessage({ type: 'leave', id: sessionId });
-          } catch (e) {}
-        }
-
-        const payload = JSON.stringify({ event: 'leave', sessionId });
-        if (navigator.sendBeacon) {
-          navigator.sendBeacon('/api/online', payload);
-        } else {
-          fetch('/api/online', {
-            method: 'POST',
-            keepalive: true,
-            headers: { 'Content-Type': 'application/json' },
-            body: payload
-          }).catch(() => {});
-        }
-      }
-
-      refreshLiveCount();
-
-      // Send heartbeat / refresh count every 10 seconds
-      setInterval(refreshLiveCount, 10000);
-
-      window.addEventListener('beforeunload', leaveLiveSession);
-      window.addEventListener('pagehide', leaveLiveSession);
+      refresh();
+      setInterval(refresh, 300000);
     })();
   </script>
 </body>
