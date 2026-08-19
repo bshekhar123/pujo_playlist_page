@@ -26,7 +26,7 @@ module.exports = (req, res) => {
 
   if (req.method !== "POST") {
     res.writeHead(405, { ...headers, "Content-Type": "application/json" });
-    res.end(JSON.stringify({ error: "Method not allowed" }));
+    res.end(JSON.stringify({ error: "Method not allowed", live: sessions.size }));
     return;
   }
 

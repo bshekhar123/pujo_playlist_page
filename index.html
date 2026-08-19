@@ -13,7 +13,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.css" />
@@ -30,23 +30,26 @@
             <div id="blackFade" class="black-fade"></div>
         </div>
 
-        <!-- CLOCK / COUNTDOWN -->
-        <div class="time-block">
-            <time id="clock" class="time-block__clock">00:00</time>
-            <span id="countdown" class="time-block__countdown">-- DAYS TO PUJO</span>
-        </div>
+        <!-- TOP OVERLAY (TIME CARD & LIVE + PROFILE) -->
+        <header class="top-overlay">
+            <div class="time-block">
+                <time id="clock" class="time-block__clock">00:00:00</time>
+                <span id="countdown" class="time-block__countdown">-- DAYS TO PUJO</span>
+            </div>
 
-        <!-- PROFILE -->
-        <div id="liveIndicator" class="live-indicator" aria-live="polite" aria-label="Live listeners">
-            <span class="live-indicator__dot" aria-hidden="true"></span>
-            <span id="liveCount">26</span>
-            <span class="live-indicator__label">LIVE</span>
-        </div>
+            <div class="top-right-controls">
+                <div id="liveIndicator" class="live-indicator" aria-live="polite" aria-label="Live listeners">
+                    <span class="live-indicator__dot" aria-hidden="true"></span>
+                    <span id="liveCount">26</span>
+                    <span class="live-indicator__label">LIVE</span>
+                </div>
 
-        <button id="profileButton" class="profile-button" type="button" aria-expanded="false"
-            aria-controls="profileCard">
-            <span class="profile-button__avatar">SB</span>
-        </button>
+                <button id="profileButton" class="profile-button" type="button" aria-expanded="false"
+                    aria-controls="profileCard">
+                    <span class="profile-button__avatar">SB</span>
+                </button>
+            </div>
+        </header>
 
         <div id="profileOverlay" class="overlay"></div>
 
@@ -61,8 +64,7 @@
             </p>
 
             <p class="profile-card__bio">
-                I build digital products, love technology and storytelling,
-                and keep a little bit of Bengal in everything I create.
+                I build digital products, love technology and storytelling.
             </p>
 
             <a href="https://www.instagram.com/shekharbiswas/" target="_blank" rel="noopener noreferrer">
@@ -105,109 +107,109 @@
         </aside>
 
         <!-- RETRO GLASS RADIO -->
-    <!-- RETRO GLASS RADIO -->
-    <div class="player-wrap">
-    
-        <section id="player" class="radio">
-    
-            <!-- ALBUM ART -->
-            <div class="radio__art">
-                <img src="images/favicon.png" alt="Pujo Radio artwork" onerror="this.style.display='none'" />
-    
-                <div class="radio__art-fallback">
-                    <small>PAARA</small>
-                    <strong>PUJO</strong>
-                </div>
-            </div>
-    
-            <!-- SONG INFO -->
-            <div class="radio__main">
-    
-                <div class="radio__station">
-                    <span class="radio__light"></span>
-                    PUJO RADIO
-                </div>
-    
-                <div class="radio__track">
-                    <h1 id="currentTitle">Shundori Komola</h1>
-                    <p id="currentArtist">
-                        Armaan Malik &amp; Antara Mitra · 2018
-                    </p>
-                </div>
-    
-                <div class="radio__progress">
-                    <span id="currentTime">0:00</span>
-    
-                    <input id="progress" type="range" min="0" max="1000" value="0" aria-label="Song progress" />
-    
-                    <span id="duration">0:00</span>
-                </div>
-    
-            </div>
-    
-            <!-- RETRO RADIO HARDWARE -->
-            <div class="radio__speaker" aria-hidden="true">
-    
-                <div class="radio__grille">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-    
-                <div class="radio__meter">
-                    <div class="radio__meter-scale">
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
-                        <i></i>
+        <!-- RETRO GLASS RADIO -->
+        <div class="player-wrap">
+
+            <section id="player" class="radio">
+
+                <!-- ALBUM ART -->
+                <div class="radio__art">
+                    <img src="images/favicon.png" alt="Pujo Radio artwork" onerror="this.style.display='none'" />
+
+                    <div class="radio__art-fallback">
+                        <small>PAARA</small>
+                        <strong>PUJO</strong>
                     </div>
-    
-                    <div class="radio__needle"></div>
-    
-                    <small>PUJO RADIO</small>
                 </div>
-    
-            </div>
-    
-            <!-- CONTROLS -->
-            <div class="radio__controls">
-    
-                <button id="prevButton" class="round-button round-button--prev" type="button" aria-label="Previous">
-                    ◀
-                </button>
-    
-                <button id="playButton" class="play-button" type="button" aria-label="Play">
-    
-                    <span id="playLabel">PLAY</span>
-                    <span id="playIcon">▶</span>
-    
-                </button>
-    
-                <button id="nextButton" class="round-button round-button--next" type="button" aria-label="Next">
-                    ▶
-                </button>
-    
-                <button id="loopButton" class="round-button round-button--loop is-active" type="button"
-                    aria-label="Loop playlist" aria-pressed="true">
-                    ↻
-                </button>
-    
-                <button id="playlistButton" class="playlist-button" type="button" aria-expanded="false"
-                    aria-controls="playlistPanel">
-                    <span>PLAYLIST</span>
-                </button>
-    
-          
-          
-            </div>
-    
-        </section>
-    
-    </div>
+
+                <!-- SONG INFO -->
+                <div class="radio__main">
+
+                    <div class="radio__station">
+                        <span class="radio__light"></span>
+                        PUJO RADIO
+                    </div>
+
+                    <div class="radio__track">
+                        <h1 id="currentTitle">Shundori Komola</h1>
+                        <p id="currentArtist">
+                            Armaan Malik &amp; Antara Mitra · 2018
+                        </p>
+                    </div>
+
+                    <div class="radio__progress">
+                        <span id="currentTime">0:00</span>
+
+                        <input id="progress" type="range" min="0" max="1000" value="0" aria-label="Song progress" />
+
+                        <span id="duration">0:00</span>
+                    </div>
+
+                </div>
+
+                <!-- RETRO RADIO HARDWARE -->
+                <div class="radio__speaker" aria-hidden="true">
+
+                    <div class="radio__grille">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <div class="radio__meter">
+                        <div class="radio__meter-scale">
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                            <i></i>
+                        </div>
+
+                        <div class="radio__needle"></div>
+
+                        <small>PUJO RADIO</small>
+                    </div>
+
+                </div>
+
+                <!-- CONTROLS -->
+                <div class="radio__controls">
+
+                    <button id="prevButton" class="round-button round-button--prev" type="button" aria-label="Previous">
+                        ◀
+                    </button>
+
+                    <button id="playButton" class="play-button" type="button" aria-label="Play">
+
+                        <span id="playLabel">PLAY</span>
+                        <span id="playIcon">▶</span>
+
+                    </button>
+
+                    <button id="nextButton" class="round-button round-button--next" type="button" aria-label="Next">
+                        ▶
+                    </button>
+
+                    <button id="loopButton" class="round-button round-button--loop is-active" type="button"
+                        aria-label="Loop playlist" aria-pressed="true">
+                        ↻
+                    </button>
+
+                    <button id="playlistButton" class="playlist-button" type="button" aria-expanded="false"
+                        aria-controls="playlistPanel">
+                        <span>PLAYLIST</span>
+                    </button>
+
+
+
+                </div>
+
+            </section>
+
+        </div>
 
         <div id="toast" class="toast"></div>
 

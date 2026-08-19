@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Count</title>
+  <style>
+    :root {
+      --bg: #0b0908;
+      --panel: rgba(16, 13, 12, 0.8);
+      --gold: #f8d17a;
+      --gold-soft: #ffd980;
+      --text: #f4efe7;
+      --muted: rgba(244, 239, 231, 0.72);
+      --dot: #53d58a;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+      height: 100%;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at top, rgba(248, 209, 122, 0.12), transparent 32%),
+        linear-gradient(180deg, #120d0b 0%, #090807 100%);
+      overflow: hidden;
+    }
+
+    .card {
+      width: min(92vw, 560px);
+      padding: 28px 26px 22px;
+      border: 1px solid rgba(248, 209, 122, 0.2);
+      border-radius: 22px;
+      background: var(--panel);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--dot);
+      box-shadow: 0 0 12px rgba(83, 213, 138, 0.9);
+      animation: pulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.7; }
+    }
+
+    .count-wrap {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 8px 0 12px;
+    }
+
+    .count {
+      font-size: clamp(60px, 13vw, 132px);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      color: var(--gold-soft);
+      text-shadow: 0 0 24px rgba(248, 209, 122, 0.3);
+    }
+
+    .suffix {
+      font-size: clamp(16px, 3vw, 24px);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .time {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <main class="card" aria-live="polite">
+    <div class="label">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Live listeners</span>
+    </div>
+
+    <div class="count-wrap">
+      <div id="liveCount" class="count">00</div>
+      <div class="suffix">Now</div>
+    </div>
+
+    <div id="lastUpdated" class="time">Updated just now</div>
+  </main>
+
+  <script>
+    (() => {
+      const countEl = document.getElementById('liveCount');
+      const lastUpdatedEl = document.getElementById('lastUpdated');
+      const LIVE_SESSION_KEY = 'pujo_live_session_id';
+
+      function makeSessionId() {
+        if (window.crypto && window.crypto.randomUUID) {
+          return window.crypto.randomUUID();
+        }
+        return 'session-' + Date.now() + '-' + Math.random().toString(16).slice(2);
+      }
+
+      function getOrCreateSessionId() {
+        let sessionId = sessionStorage.getItem(LIVE_SESSION_KEY);
+        if (!sessionId) {
+          sessionId = makeSessionId();
+          sessionStorage.setItem(LIVE_SESSION_KEY, sessionId);
+        }
+        return sessionId;
+      }
+
+      function formatClock(date) {
+        return date.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        });
+      }
+
+      const sessionId = getOrCreateSessionId();
+
+      // Local multi-tab fallback active tab tracker (if backend API is unreachable)
+      const activeTabs = new Set([sessionId]);
+      let channel = null;
+
+      try {
+        if (typeof BroadcastChannel !== 'undefined') {
+          channel = new BroadcastChannel('pujo_live_tabs');
+          channel.onmessage = (event) => {
+            const data = event.data;
+            if (!data) return;
+            if (data.type === 'ping') {
+              activeTabs.add(data.id);
+              channel.postMessage({ type: 'pong', id: sessionId });
+            } else if (data.type === 'pong') {
+              activeTabs.add(data.id);
+            } else if (data.type === 'leave') {
+              activeTabs.delete(data.id);
+            }
+          };
+          channel.postMessage({ type: 'ping', id: sessionId });
+        }
+      } catch (e) {
+        console.warn('BroadcastChannel fallback setup warning:', e);
+      }
+
+      async function refreshLiveCount() {
+        const now = new Date();
+
+        try {
+          const response = await fetch('/api/online', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ event: 'heartbeat', sessionId })
+          });
+
+          if (!response.ok) {
+            throw new Error('Status ' + response.status);
+          }
+
+          const payload = await response.json();
+          const realLiveCount = Math.max(1, Math.round(Number(payload.live || 1)));
+          countEl.textContent = String(realLiveCount);
+          lastUpdatedEl.textContent = 'Updated ' + formatClock(now);
+        } catch (error) {
+          // If backend API endpoint is not active, fallback to actual open active tabs count
+          const fallbackCount = Math.max(1, activeTabs.size);
+          countEl.textContent = String(fallbackCount);
+          lastUpdatedEl.textContent = 'Updated ' + formatClock(now);
+        }
+      }
+
+      function leaveLiveSession() {
+        if (channel) {
+          try {
+            channel.postMessage({ type: 'leave', id: sessionId });
+          } catch (e) {}
+        }
+
+        const payload = JSON.stringify({ event: 'leave', sessionId });
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon('/api/online', payload);
+        } else {
+          fetch('/api/online', {
+            method: 'POST',
+            keepalive: true,
+            headers: { 'Content-Type': 'application/json' },
+            body: payload
+          }).catch(() => {});
+        }
+      }
+
+      refreshLiveCount();
+
+      // Send heartbeat / refresh count every 10 seconds
+      setInterval(refreshLiveCount, 10000);
+
+      window.addEventListener('beforeunload', leaveLiveSession);
+      window.addEventListener('pagehide', leaveLiveSession);
+    })();
+  </script>
+</body>
+</html>

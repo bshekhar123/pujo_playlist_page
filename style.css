@@ -105,61 +105,126 @@ button {
 
 
 /* =====================================================
-   TIME
+   TIME & HEADER TOP OVERLAY
    ===================================================== */
 
-.time-block {
+.top-overlay {
     position: absolute;
-    z-index: 5;
-    top: 27px;
-    left: 30px;
-    display: grid;
-    gap: 3px;
-    text-shadow: 0 4px 18px rgba(0, 0, 0, .45);
+    z-index: 10;
+    top: 22px;
+    left: 24px;
+    right: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+}
+
+.top-overlay > * {
+    pointer-events: auto;
+}
+
+.time-block {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 215px;
+    height: 121px;
+    padding: 0 14px 18px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    text-align: center;
+}
+
+/* Layer 0: Dark background fill placed BEHIND the border frame */
+.time-block::before {
+    content: "";
+    position: absolute;
+    inset: 6px 8px 18px 8px;
+    background: rgba(28, 18, 11, 0.68);
+    border-radius: 14px;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Layer 1: Gold border PNG image frame placed ON TOP of background fill */
+.time-block::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url("images/border.png") no-repeat center / contain;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Layer 2: Text content placed ON TOP of frame */
+.time-block__clock,
+.time-block__countdown {
+    position: relative;
+    z-index: 2;
 }
 
 .time-block__clock {
-    font-family: "Manrope", "Segoe UI", sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: .9;
-    letter-spacing: .04em;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 44px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    color: #F3DFB5;
     font-variant-numeric: tabular-nums;
 }
 
 .time-block__countdown {
-    font-family: "Manrope", "Segoe UI", sans-serif;
-    font-size: 8px;
-    font-weight: 700;
-    letter-spacing: .12em;
+    font-family: Inter, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.7px;
+    color: #EFE3CD;
+    margin-top: 6px;
+    text-transform: uppercase;
 }
 
 
 /* =====================================================
-   PROFILE
+   TOP OVERLAY RIGHT (LIVE INDICATOR & PROFILE)
    ===================================================== */
 
+.top-right-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
 .live-indicator {
-    position: absolute;
-    z-index: 7;
-    top: 23px;
-    right: 64px;
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    min-height: 30px;
-    padding: 5px 9px 5px 7px;
-    border: 0;
+    gap: 8px;
+    height: 42px;
+    padding: 0 16px;
     border-radius: 999px;
-    background: rgba(15, 22, 17, .38);
-    box-shadow: 0 0 18px rgba(68, 215, 107, .12);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    font-size: 9px;
-    font-weight: 800;
-    letter-spacing: .12em;
-    color: var(--cream);
+    background: rgba(28, 18, 11, 0.9);
+    border: 1px solid rgba(181, 128, 54, 0.8);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    font-family: Inter, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #F3DFB5;
+    line-height: 1;
+}
+
+.live-indicator::before {
+    content: "";
+    position: absolute;
+    inset: 3.5px;
+    border: 1px solid rgba(181, 128, 54, 0.45);
+    border-radius: 999px;
+    pointer-events: none;
 }
 
 .live-indicator__dot {
@@ -167,68 +232,72 @@ button {
     height: 8px;
     display: inline-block;
     border-radius: 50%;
-    background: #53e67b;
-    box-shadow: 0 0 10px rgba(83, 230, 123, .96), 0 0 18px rgba(83, 230, 123, .8);
+    background: #ff4d45;
+    box-shadow: 0 0 7px rgba(255, 77, 69, 0.55);
     animation: live-pulse 1.6s ease-in-out infinite;
     flex: 0 0 auto;
 }
 
 .live-indicator__label {
-    color: var(--muted);
-    font-size: 8px;
-    letter-spacing: .14em;
+    color: #EFE3CD;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    line-height: 1;
 }
 
 @keyframes live-pulse {
     0%,
     100% {
         transform: scale(1);
-        box-shadow: 0 0 8px rgba(83, 230, 123, .9), 0 0 16px rgba(83, 230, 123, .7);
+        box-shadow: 0 0 5px rgba(255, 77, 69, 0.55);
     }
     50% {
         transform: scale(1.18);
-        box-shadow: 0 0 12px rgba(83, 230, 123, 1), 0 0 22px rgba(83, 230, 123, .9);
+        box-shadow: 0 0 9px rgba(255, 77, 69, 0.85);
     }
 }
 
 .profile-button {
-    position: absolute;
-    z-index: 7;
-    top: 23px;
-    right: 18px;
-    display: flex;
+    position: relative;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 42px;
+    height: 42px;
     padding: 0;
-    border: 0;
     border-radius: 50%;
-    background: rgba(25, 17, 14, .28);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(28, 18, 11, 0.9);
+    border: 1px solid rgba(181, 128, 54, 0.8);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
     cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    line-height: 1;
+}
+
+.profile-button::before {
+    content: "";
+    position: absolute;
+    inset: 3.5px;
+    border: 1px solid rgba(181, 128, 54, 0.45);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.profile-button:hover {
+    transform: scale(1.04);
+    border-color: #B98232;
 }
 
 .profile-button__avatar {
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(255, 247, 233, .12);
-    font-family: var(--serif);
-    font-weight: 700;
-}
-
-.profile-button__name {
-    font-family: var(--serif);
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Cormorant Garamond", serif;
+    font-size: 16px;
     font-weight: 600;
-}
-
-.profile-button__arrow {
-    color: var(--muted);
+    color: #F3DFB5;
+    line-height: 1;
 }
 
 .overlay {
@@ -1402,77 +1471,99 @@ button {
 
 
     /* =====================================================
-       MOBILE CLOCK
+       MOBILE HEADER & TOP OVERLAY
        ===================================================== */
 
+    .top-overlay {
+        top: 14px;
+        left: 14px;
+        right: 14px;
+        padding: 0;
+        align-items: center;
+    }
+
     .time-block {
-        top: 18px;
-        left: 18px;
+        width: 180px;
+        height: 101px;
+        padding: 0 10px 15px;
+    }
 
-        width: auto;
-
-        transform: none;
-
-        justify-items: start;
-
-        text-align: left;
+    .time-block::before {
+        inset: 5px 6px 15px 6px;
+        border-radius: 12px;
     }
 
     .time-block__clock {
-        font-family: "Manrope", "Segoe UI", sans-serif;
-
-        font-size: clamp(28px, 7vw, 38px);
-
-        font-weight: 800;
-        line-height: 1;
-
-        letter-spacing: .04em;
-
-        font-variant-numeric: tabular-nums;
+        font-size: 34px;
+        font-weight: 600;
     }
 
     .time-block__countdown {
-        font-family: "Manrope", "Segoe UI", sans-serif;
-
+        font-family: Inter, sans-serif;
         font-size: 9px;
-
-        letter-spacing: .12em;
-
-        font-weight: 700;
+        font-weight: 600;
+        letter-spacing: 1.7px;
+        color: #EFE3CD;
+        margin-top: 4px;
     }
 
+    .top-right-controls {
+        gap: 7px;
+    }
 
-    /* =====================================================
-       MOBILE PROFILE
-       ===================================================== */
+    @media (max-width: 600px) {
+        .top-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            right: auto;
+            transform: translate(-50%, -50%);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: auto;
+        }
+
+        .top-right-controls {
+            justify-content: center;
+            width: 100%;
+        }
+    }
 
     .live-indicator {
-        top: 16px;
-        right: 56px;
-        gap: 4px;
-        min-height: 28px;
-        padding: 5px 8px 5px 7px;
-        font-size: 7px;
-        letter-spacing: .08em;
+        height: 38px;
+        padding: 0 12px;
+        gap: 6px;
+        font-size: 11px;
+    }
+
+    .live-indicator::before {
+        inset: 3px;
+    }
+
+    .live-indicator__dot {
+        width: 8px;
+        height: 8px;
     }
 
     .live-indicator__label {
-        display: none;
+        display: inline;
+        font-size: 10px;
+        letter-spacing: 1.2px;
     }
 
     .profile-button {
-        top: 14px;
-        right: 14px;
-        width: 32px;
-        height: 32px;
-        padding: 0;
-        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+    }
+
+    .profile-button::before {
+        inset: 3px;
     }
 
     .profile-button__avatar {
-        width: 24px;
-        height: 24px;
-        font-size: 10px;
+        font-size: 15px;
     }
 
     .profile-card {

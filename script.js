@@ -168,60 +168,70 @@
         }
     }
 
-    const LISTENER_PERIODS = [
-        { start: 2 * 60, end: 5 * 60, min: 1, max: 8 },
-        { start: 5 * 60, end: 7 * 60, min: 5, max: 22 },
-        { start: 7 * 60, end: 9 * 60, min: 20, max: 65 },
-        { start: 9 * 60, end: 12 * 60, min: 45, max: 110 },
-        { start: 12 * 60, end: 15 * 60, min: 70, max: 145 },
-        { start: 15 * 60, end: 17 * 60, min: 90, max: 175 },
-        { start: 17 * 60, end: 19 * 60, min: 140, max: 215 },
-        { start: 19 * 60, end: 22.5 * 60, min: 185, max: 248 },
-        { start: 22.5 * 60, end: 24 * 60, min: 110, max: 190 },
-        { start: 0, end: 2 * 60, min: 20, max: 80 }
-    ];
+    const LIVE_SESSION_KEY = "pujo_live_session_id";
 
-    let lastLiveCount = null;
+    function makeSessionId() {
+        if (window.crypto && window.crypto.randomUUID) {
+            return window.crypto.randomUUID();
+        }
 
-    function clamp(value, min, max) {
-        return Math.min(Math.max(value, min), max);
+        return `session-${Date.now()}-${Math.random().toString(16).slice(2)}`;
     }
 
-    function getListenerRangeForTime(date) {
-        const minutes = date.getHours() * 60 + date.getMinutes();
+    function getOrCreateSessionId() {
+        let sessionId = sessionStorage.getItem(LIVE_SESSION_KEY);
 
-        for (const period of LISTENER_PERIODS) {
-            if (minutes >= period.start && minutes < period.end) {
-                return period;
+        if (!sessionId) {
+            sessionId = makeSessionId();
+            sessionStorage.setItem(LIVE_SESSION_KEY, sessionId);
+        }
+
+        return sessionId;
+    }
+
+    async function refreshLiveCount() {
+        const sessionId = getOrCreateSessionId();
+
+        try {
+            const response = await fetch("/api/online", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ event: "heartbeat", sessionId })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Live count request failed with status ${response.status}`);
+            }
+
+            const payload = await response.json();
+            const value = Number(payload.live || 1);
+            liveCount.textContent = String(Math.max(1, Math.round(value)));
+        } catch (error) {
+            console.warn("Live count unavailable:", error);
+            if (!liveCount.textContent || Number(liveCount.textContent) < 1) {
+                liveCount.textContent = "1";
             }
         }
-
-        return { min: 20, max: 80 };
     }
 
-    function simulateLiveCount(date) {
-        const range = getListenerRangeForTime(date);
-        const center = (range.min + range.max) / 2;
-        const minuteOfDay = date.getHours() * 60 + date.getMinutes();
-        const timeWave = Math.sin((minuteOfDay + 17) / 11) * ((range.max - range.min) * 0.2);
-        const target = clamp(Math.round(center + timeWave), range.min, range.max);
+    function leaveLiveSession() {
+        const sessionId = sessionStorage.getItem(LIVE_SESSION_KEY);
 
-        if (lastLiveCount === null) {
-            lastLiveCount = clamp(target, 1, 248);
-            return lastLiveCount;
+        if (!sessionId) return;
+
+        const payload = JSON.stringify({ event: "leave", sessionId });
+
+        if (navigator.sendBeacon) {
+            navigator.sendBeacon("/api/online", payload);
+            return;
         }
 
-        const drift = clamp(target - lastLiveCount, -12, 12);
-        const adjusted = lastLiveCount + drift;
-
-        const nextValue = clamp(Math.round(adjusted), 1, 248);
-        lastLiveCount = nextValue;
-        return nextValue;
-    }
-
-    function updateLiveCount() {
-        const value = simulateLiveCount(new Date());
-        liveCount.textContent = String(value);
+        fetch("/api/online", {
+            method: "POST",
+            keepalive: true,
+            headers: { "Content-Type": "application/json" },
+            body: payload
+        }).catch(() => {});
     }
 
     /* =====================================================
@@ -562,11 +572,13 @@
     setPlaying(false);
 
     updateTime();
-    updateLiveCount();
+    refreshLiveCount();
     switchBackground(true);
 
+    window.addEventListener("beforeunload", leaveLiveSession);
+
     setInterval(updateTime, 1000);
-    setInterval(updateLiveCount, 5 * 60 * 1000);
+    setInterval(refreshLiveCount, 15000);
     setInterval(switchBackground, 30000);
 
 })();
