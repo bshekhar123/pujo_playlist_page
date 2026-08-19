@@ -14,7 +14,6 @@
     const profileOverlay = $("#profileOverlay");
     const closeProfile = $("#closeProfile");
 
-    const playlistButton = $("#playlistButton");
     const playlistPanel = $("#playlistPanel");
     const playlistOverlay = $("#playlistOverlay");
     const closePlaylist = $("#closePlaylist");
@@ -25,6 +24,7 @@
 
     const player = $("#player");
     const audio = $("#audio");
+    const radioArt = $("#radioArt");
     const currentTitle = $("#currentTitle");
     const currentArtist = $("#currentArtist");
     const currentTime = $("#currentTime");
@@ -37,6 +37,11 @@
     const prevButton = $("#prevButton");
     const nextButton = $("#nextButton");
     const loopButton = $("#loopButton");
+
+    const btnParaaPlaylist = $("#btnParaaPlaylist");
+    const btnAarati = $("#btnAarati");
+    const btnDhak = $("#btnDhak");
+    const aaratiLockIcon = $("#aaratiLockIcon");
 
     const toast = $("#toast");
     const liveCount = $("#liveCount");
@@ -278,14 +283,10 @@
         playlistOverlay.classList.toggle("is-open", open);
 
         playlistPanel.setAttribute("aria-hidden", String(!open));
-        playlistButton.setAttribute("aria-expanded", String(open));
+        if (btnParaaPlaylist) btnParaaPlaylist.setAttribute("aria-expanded", String(open));
 
         if (open) setProfile(false);
     }
-
-    playlistButton.addEventListener("click", () => {
-        setPlaylist(!playlistPanel.classList.contains("is-open"));
-    });
 
     closePlaylist.addEventListener("click", () => setPlaylist(false));
     playlistOverlay.addEventListener("click", () => setPlaylist(false));
@@ -364,8 +365,161 @@
     });
 
     /* =====================================================
-       AUDIO PLAYER
+       PLAYER MODES & CONTROLLER (Paraa Playlist, Aarati, Dhak)
        ===================================================== */
+
+    let currentMode = "playlist"; // 'playlist' | 'aarati' | 'dhak'
+
+    const MODE_TRACKS = {
+        aarati: {
+            title: "Sandhya Aarati",
+            singer: "Paara Pujo Aarati",
+            file: "audio/AARATI.mp3",
+            artwork: "images/aarati.png"
+        },
+        dhak: {
+            title: "Dhak Beats",
+            singer: "Traditional Pujo Dhak",
+            file: "audio/DHAK.mp3",
+            artwork: "images/dhak.png"
+        }
+    };
+
+    function isAaratiAvailable() {
+        const now = new Date();
+        const minutes = now.getHours() * 60 + now.getMinutes();
+        return minutes >= (18 * 60 + 30); // 18:30 = 1110 minutes
+    }
+
+    function updateAaratiLockUI() {
+        const available = isAaratiAvailable();
+        if (btnAarati) {
+            btnAarati.classList.toggle("is-locked", !available);
+        }
+        if (aaratiLockIcon) {
+            aaratiLockIcon.style.display = available ? "none" : "inline";
+        }
+    }
+
+    function showCustomToast({ title, message, icon }) {
+        if (!toast) return;
+
+        toast.replaceChildren();
+
+        if (icon) {
+            const iconImg = document.createElement("img");
+            iconImg.className = "toast__icon";
+            iconImg.src = icon;
+            iconImg.alt = "";
+            toast.appendChild(iconImg);
+        }
+
+        const content = document.createElement("div");
+        content.className = "toast__content";
+
+        const titleEl = document.createElement("div");
+        titleEl.className = "toast__title";
+        titleEl.textContent = title;
+
+        const msgEl = document.createElement("div");
+        msgEl.className = "toast__message";
+        msgEl.textContent = message;
+
+        content.append(titleEl, msgEl);
+        toast.appendChild(content);
+
+        toast.classList.add("is-visible");
+
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toast.classList.remove("is-visible");
+        }, 3500);
+    }
+
+    function showSimpleToast(message) {
+        showCustomToast({
+            title: message,
+            message: "",
+            icon: null
+        });
+    }
+
+    async function setPlayerMode(mode) {
+        const wasPlaying = !audio.paused;
+
+        if (mode === currentMode) {
+            if (mode === "playlist") {
+                setPlaylist(!playlistPanel.classList.contains("is-open"));
+            }
+            return;
+        }
+
+        audio.pause();
+        currentMode = mode;
+
+        if (btnParaaPlaylist) btnParaaPlaylist.classList.toggle("is-active", mode === "playlist");
+        if (btnAarati) btnAarati.classList.toggle("is-active", mode === "aarati");
+        if (btnDhak) btnDhak.classList.toggle("is-active", mode === "dhak");
+
+        if (mode === "playlist") {
+            if (radioArt) radioArt.src = "images/favicon.png";
+            prevButton.disabled = false;
+            nextButton.disabled = false;
+            prevButton.style.opacity = "1";
+            nextButton.style.opacity = "1";
+            setTrackText();
+            audio.src = TRACKS[currentIndex].file;
+        } else {
+            const modeData = MODE_TRACKS[mode];
+            if (!modeData) return;
+
+            if (radioArt) radioArt.src = modeData.artwork;
+            currentTitle.textContent = modeData.title;
+            currentArtist.textContent = modeData.singer;
+
+            prevButton.disabled = true;
+            nextButton.disabled = true;
+            prevButton.style.opacity = "0.5";
+            nextButton.style.opacity = "0.5";
+
+            audio.src = modeData.file;
+        }
+
+        progress.value = 0;
+        progress.style.setProperty("--pct", "0%");
+        currentTime.textContent = "0:00";
+        duration.textContent = "0:00";
+
+        if (wasPlaying) {
+            try {
+                await audio.play();
+            } catch (e) {
+                console.warn("Autoplay error on mode change:", e);
+            }
+        }
+    }
+
+    if (btnParaaPlaylist) {
+        btnParaaPlaylist.addEventListener("click", () => setPlayerMode("playlist"));
+    }
+
+    if (btnAarati) {
+        btnAarati.addEventListener("click", () => {
+            if (!isAaratiAvailable()) {
+                showCustomToast({
+                    title: "Sandhya Aarati begins at 6:30 PM",
+                    message: "Come back this evening for the paraa aarati.",
+                    icon: "images/aarati.png"
+                });
+                return;
+            }
+            setPlayerMode("aarati");
+        });
+    }
+
+    if (btnDhak) {
+        btnDhak.addEventListener("click", () => setPlayerMode("dhak"));
+    }
 
     function formatTime(seconds) {
         if (!Number.isFinite(seconds)) return "0:00";
@@ -374,17 +528,6 @@
         const secs = Math.floor(seconds % 60).toString().padStart(2, "0");
 
         return `${minutes}:${secs}`;
-    }
-
-    function showToast(message) {
-        toast.textContent = message;
-        toast.classList.add("is-visible");
-
-        clearTimeout(toastTimer);
-
-        toastTimer = setTimeout(() => {
-            toast.classList.remove("is-visible");
-        }, 2000);
     }
 
     function setTrackText() {
@@ -407,8 +550,20 @@
         const track = TRACKS[index];
 
         if (!track?.file) {
-            showToast("Audio file not added");
+            showSimpleToast("Audio file not added");
             return;
+        }
+
+        if (currentMode !== "playlist") {
+            currentMode = "playlist";
+            if (btnParaaPlaylist) btnParaaPlaylist.classList.add("is-active");
+            if (btnAarati) btnAarati.classList.remove("is-active");
+            if (btnDhak) btnDhak.classList.remove("is-active");
+            if (radioArt) radioArt.src = "images/favicon.png";
+            prevButton.disabled = false;
+            nextButton.disabled = false;
+            prevButton.style.opacity = "1";
+            nextButton.style.opacity = "1";
         }
 
         const changed = index !== currentIndex || !audio.getAttribute("src");
@@ -428,20 +583,18 @@
             await audio.play();
         } catch (error) {
             console.error(error);
-            showToast(`Could not play ${track.title}`);
+            showSimpleToast(`Could not play ${track.title}`);
         }
     }
 
     async function togglePlay() {
-        const track = TRACKS[currentIndex];
-
-        if (!track?.file) {
-            showToast("No playable audio");
-            return;
-        }
-
         if (!audio.getAttribute("src")) {
-            await playTrack(currentIndex);
+            if (currentMode === "playlist") {
+                await playTrack(currentIndex);
+            } else {
+                audio.src = MODE_TRACKS[currentMode]?.file || TRACKS[0].file;
+                try { await audio.play(); } catch {}
+            }
             return;
         }
 
@@ -449,7 +602,7 @@
             try {
                 await audio.play();
             } catch {
-                showToast("Could not play audio");
+                showSimpleToast("Could not play audio");
             }
         } else {
             audio.pause();
@@ -463,6 +616,8 @@
     }
 
     function nextIndex(direction) {
+        if (currentMode !== "playlist") return -1;
+
         const playable = playableIndexes();
         const position = playable.indexOf(currentIndex);
 
@@ -487,6 +642,11 @@
     playButton.addEventListener("click", togglePlay);
 
     prevButton.addEventListener("click", () => {
+        if (currentMode !== "playlist") {
+            audio.currentTime = 0;
+            return;
+        }
+
         if (audio.currentTime > 3) {
             audio.currentTime = 0;
             return;
@@ -497,6 +657,11 @@
     });
 
     nextButton.addEventListener("click", () => {
+        if (currentMode !== "playlist") {
+            audio.currentTime = 0;
+            return;
+        }
+
         const index = nextIndex(1);
         if (index >= 0) playTrack(index);
     });
@@ -509,19 +674,22 @@
 
     audio.addEventListener("play", () => {
         setPlaying(true);
-        renderTracks();
+        if (currentMode === "playlist") renderTracks();
     });
 
     audio.addEventListener("pause", () => {
         setPlaying(false);
-        renderTracks();
+        if (currentMode === "playlist") renderTracks();
     });
 
     audio.addEventListener("ended", () => {
-        const index = nextIndex(1);
-
-        if (index >= 0) {
-            playTrack(index);
+        if (currentMode === "playlist") {
+            const index = nextIndex(1);
+            if (index >= 0) {
+                playTrack(index);
+            } else {
+                setPlaying(false);
+            }
         } else {
             setPlaying(false);
         }
@@ -550,7 +718,7 @@
     });
 
     audio.addEventListener("error", () => {
-        showToast("Audio file could not be loaded");
+        showSimpleToast("Audio file could not be loaded");
     });
 
     /* =====================================================
@@ -580,10 +748,12 @@
     setPlaying(false);
 
     updateTime();
+    updateAaratiLockUI();
     refreshLiveCount();
     switchBackground(true);
 
     setInterval(updateTime, 1000);
+    setInterval(updateAaratiLockUI, 10000);
     setInterval(refreshLiveCount, 300000); // Update simulated count every 5 minutes
     setInterval(switchBackground, 30000);
 

@@ -107,14 +107,33 @@
         </aside>
 
         <!-- RETRO GLASS RADIO -->
-        <!-- RETRO GLASS RADIO -->
         <div class="player-wrap">
+
+            <!-- MODE SELECTOR CONTROLS -->
+            <div class="mode-selector-wrap" aria-label="Player mode selectors">
+                <button id="btnParaaPlaylist" class="mode-btn mode-btn--playlist is-active" type="button">
+                    <img src="images/paara-playlist.png" alt="" class="mode-btn__icon" />
+                    <span class="mode-btn__label mode-btn__label--full">Paraa Playlist</span>
+                    <span class="mode-btn__label mode-btn__label--short">Playlist</span>
+                </button>
+
+                <button id="btnAarati" class="mode-btn mode-btn--aarati" type="button">
+                    <img src="images/aarati.png" alt="" class="mode-btn__icon" />
+                    <span class="mode-btn__label">Aarati</span>
+                    <span id="aaratiLockIcon" class="mode-btn__lock" aria-hidden="true">🔒</span>
+                </button>
+
+                <button id="btnDhak" class="mode-btn mode-btn--dhak" type="button">
+                    <img src="images/dhak.png" alt="" class="mode-btn__icon" />
+                    <span class="mode-btn__label">Dhak</span>
+                </button>
+            </div>
 
             <section id="player" class="radio">
 
                 <!-- ALBUM ART -->
                 <div class="radio__art">
-                    <img src="images/favicon.png" alt="Pujo Radio artwork" onerror="this.style.display='none'" />
+                    <img id="radioArt" src="images/favicon.png" alt="Pujo Radio artwork" onerror="this.style.display='none'" />
 
                     <div class="radio__art-fallback">
                         <small>PAARA</small>
@@ -198,20 +217,13 @@
                         ↻
                     </button>
 
-                    <button id="playlistButton" class="playlist-button" type="button" aria-expanded="false"
-                        aria-controls="playlistPanel">
-                        <span>PLAYLIST</span>
-                    </button>
-
-
-
                 </div>
 
             </section>
 
         </div>
 
-        <div id="toast" class="toast"></div>
+        <div id="toast" class="toast" aria-live="polite"></div>
 
         <audio id="audio" preload="metadata"></audio>
 
