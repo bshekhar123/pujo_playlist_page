@@ -238,11 +238,12 @@ button {
     flex: 0 0 auto;
 }
 
+.live-indicator__prefix,
 .live-indicator__label {
     color: #EFE3CD;
     font-size: 11px;
     font-weight: 600;
-    letter-spacing: 1.5px;
+    letter-spacing: 0.8px;
     line-height: 1;
 }
 
@@ -1702,10 +1703,11 @@ button {
         height: 8px;
     }
 
+    .live-indicator__prefix,
     .live-indicator__label {
         display: inline;
         font-size: 10px;
-        letter-spacing: 1.2px;
+        letter-spacing: 0.6px;
     }
 
     .profile-button {
