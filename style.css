@@ -1956,32 +1956,22 @@ button {
     /* MOBILE CONTROLS */
 
     .radio__controls {
-        grid-template-columns:
-            27px 45px 27px;
-
-        grid-template-rows:
-            48px 21px;
-
-        align-content: center;
+        display: flex;
         align-items: center;
         justify-content: center;
-
-        gap: 4px 2px;
-
-        width: 101px;
-
+        gap: 5px;
+        width: auto;
         min-width: 0;
     }
 
     .round-button {
-        width: 27px;
-        height: 27px;
-
+        width: 28px;
+        height: 28px;
         padding: 0;
-
-        border-color: rgba(255, 239, 216, .10);
-
-        font-size: 8px;
+        border-radius: 50%;
+        border-color: rgba(255, 239, 216, .14);
+        font-size: 9px;
+        flex: 0 0 28px;
     }
 
     .round-button:hover {
@@ -1989,13 +1979,11 @@ button {
     }
 
     .play-button {
-        width: 45px;
-        height: 45px;
-
+        width: 44px;
+        height: 44px;
         padding: 0;
-
         border-radius: 50%;
-
+        flex: 0 0 44px;
         box-shadow:
             0 0 0 3px rgba(111, 67, 38, .22),
             0 6px 15px rgba(0, 0, 0, .24),
@@ -2012,7 +2000,6 @@ button {
 
     .play-button #playIcon {
         margin-left: 2px;
-
         font-size: 13px;
     }
 
