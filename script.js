@@ -404,6 +404,99 @@
         });
     }
 
+    /* =====================================================
+       MEDIA SESSION & PRELOADER (FOR BACKGROUND & LOCK SCREEN)
+       ===================================================== */
+
+    const preloader = new Audio();
+    preloader.preload = "auto";
+
+    function preloadNextTrack() {
+        if (currentMode !== "playlist") return;
+        const nextIdx = nextIndex(1);
+        if (nextIdx >= 0 && TRACKS[nextIdx]?.file) {
+            preloader.src = TRACKS[nextIdx].file;
+        }
+    }
+
+    function updateMediaSession() {
+        if (!('mediaSession' in navigator)) return;
+
+        let title = "";
+        let artist = "";
+        let artworkSrc = "images/favicon.png";
+
+        if (currentMode === "playlist") {
+            const track = TRACKS[currentIndex];
+            if (track) {
+                title = track.title;
+                artist = `${track.singer} · ${track.year}`;
+            }
+        } else {
+            const modeData = MODE_TRACKS[currentMode];
+            if (modeData) {
+                title = modeData.title;
+                artist = modeData.singer;
+                artworkSrc = modeData.artwork;
+            }
+        }
+
+        try {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: title || "Paara Pujo Radio",
+                artist: artist || "Pujo Radio",
+                album: "Paara Pujo Radio",
+                artwork: [
+                    { src: artworkSrc, sizes: "512x512", type: "image/png" }
+                ]
+            });
+        } catch (e) {
+            console.warn("MediaSession metadata error:", e);
+        }
+    }
+
+    function setupMediaSession() {
+        if (!('mediaSession' in navigator)) return;
+
+        try {
+            navigator.mediaSession.setActionHandler('play', () => {
+                togglePlay();
+            });
+            navigator.mediaSession.setActionHandler('pause', () => {
+                togglePlay();
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                if (currentMode === "playlist") {
+                    if (audio.currentTime > 3) {
+                        audio.currentTime = 0;
+                        return;
+                    }
+                    const idx = nextIndex(-1);
+                    if (idx >= 0) playTrack(idx, true);
+                } else {
+                    audio.currentTime = 0;
+                }
+            });
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                if (currentMode === "playlist") {
+                    const idx = nextIndex(1);
+                    if (idx >= 0) playTrack(idx, true);
+                } else {
+                    audio.currentTime = 0;
+                }
+            });
+            navigator.mediaSession.setActionHandler('seekto', (details) => {
+                if (details.fastSeek && 'fastSeek' in audio) {
+                    audio.fastSeek(details.seekTime);
+                    return;
+                }
+                audio.currentTime = details.seekTime;
+            });
+        } catch (e) {
+            console.warn("MediaSession action handler error:", e);
+        }
+    }
+
     async function setPlayerMode(mode) {
         const wasPlaying = !audio.paused;
 
@@ -429,6 +522,7 @@
             nextButton.style.opacity = "1";
             setTrackText();
             audio.src = TRACKS[currentIndex].file;
+            audio.preload = "auto";
         } else {
             const modeData = MODE_TRACKS[mode];
             if (!modeData) return;
@@ -443,12 +537,16 @@
             nextButton.style.opacity = "0.5";
 
             audio.src = modeData.file;
+            audio.preload = "auto";
         }
 
         progress.value = 0;
         progress.style.setProperty("--pct", "0%");
         currentTime.textContent = "0:00";
         duration.textContent = "0:00";
+
+        updateMediaSession();
+        preloadNextTrack();
 
         if (wasPlaying) {
             try {
@@ -506,7 +604,7 @@
         playIcon.textContent = playing ? "Ⅱ" : "▶";
     }
 
-    async function playTrack(index) {
+    async function playTrack(index, autoPlay = true) {
         const track = TRACKS[index];
 
         if (!track?.file) {
@@ -533,26 +631,34 @@
 
         if (changed) {
             audio.src = track.file;
+            audio.preload = "auto";
             progress.value = 0;
             progress.style.setProperty("--pct", "0%");
             currentTime.textContent = "0:00";
             duration.textContent = "0:00";
         }
 
-        try {
-            await audio.play();
-        } catch (error) {
-            console.error(error);
-            showSimpleToast(`Could not play ${track.title}`);
+        updateMediaSession();
+        preloadNextTrack();
+
+        if (autoPlay) {
+            try {
+                await audio.play();
+            } catch (error) {
+                console.error("playTrack error:", error);
+                showSimpleToast(`Click Play to start ${track.title}`);
+            }
         }
     }
 
     async function togglePlay() {
         if (!audio.getAttribute("src")) {
             if (currentMode === "playlist") {
-                await playTrack(currentIndex);
+                await playTrack(currentIndex, true);
             } else {
                 audio.src = MODE_TRACKS[currentMode]?.file || TRACKS[0].file;
+                audio.preload = "auto";
+                updateMediaSession();
                 try { await audio.play(); } catch {}
             }
             return;
@@ -613,7 +719,7 @@
         }
 
         const index = nextIndex(-1);
-        if (index >= 0) playTrack(index);
+        if (index >= 0) playTrack(index, true);
     });
 
     nextButton.addEventListener("click", () => {
@@ -623,7 +729,7 @@
         }
 
         const index = nextIndex(1);
-        if (index >= 0) playTrack(index);
+        if (index >= 0) playTrack(index, true);
     });
 
     loopButton.addEventListener("click", () => {
@@ -635,18 +741,25 @@
     audio.addEventListener("play", () => {
         setPlaying(true);
         if (currentMode === "playlist") renderTracks();
+        if ('mediaSession' in navigator) {
+            try { navigator.mediaSession.playbackState = 'playing'; } catch (e) {}
+        }
+        preloadNextTrack();
     });
 
     audio.addEventListener("pause", () => {
         setPlaying(false);
         if (currentMode === "playlist") renderTracks();
+        if ('mediaSession' in navigator) {
+            try { navigator.mediaSession.playbackState = 'paused'; } catch (e) {}
+        }
     });
 
     audio.addEventListener("ended", () => {
         if (currentMode === "playlist") {
             const index = nextIndex(1);
             if (index >= 0) {
-                playTrack(index);
+                playTrack(index, true);
             } else {
                 setPlaying(false);
             }
@@ -668,6 +781,16 @@
 
         progress.value = percent;
         progress.style.setProperty("--pct", `${percent / 10}%`);
+
+        if ('mediaSession' in navigator && audio.duration) {
+            try {
+                navigator.mediaSession.setPositionState({
+                    duration: audio.duration,
+                    playbackRate: audio.playbackRate,
+                    position: audio.currentTime
+                });
+            } catch (e) {}
+        }
     });
 
     progress.addEventListener("input", () => {
@@ -704,6 +827,7 @@
        START
        ===================================================== */
 
+    setupMediaSession();
     setTrackText();
     setPlaying(false);
 
