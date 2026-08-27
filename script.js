@@ -405,24 +405,43 @@
     }
 
     /* =====================================================
-       MEDIA SESSION & PRELOADER (FOR BACKGROUND & LOCK SCREEN)
+       MEDIA SESSION & SAFE AUDIO ENGINE (FOR SMOOTH BG PLAYBACK)
        ===================================================== */
 
-    const preloader = new Audio();
-    preloader.preload = "auto";
+    let pendingAutoPlay = false;
 
     function getSafeAudioUrl(file) {
         if (!file) return "";
         return encodeURI(file);
     }
 
-    function preloadNextTrack() {
-        if (currentMode !== "playlist") return;
-        const nextIdx = nextIndex(1);
-        if (nextIdx >= 0 && TRACKS[nextIdx]?.file) {
-            preloader.src = getSafeAudioUrl(TRACKS[nextIdx].file);
+    async function safePlayAudio() {
+        try {
+            pendingAutoPlay = false;
+            await audio.play();
+        } catch (error) {
+            console.warn("Playback waiting for buffer/activation:", error);
+            pendingAutoPlay = true;
         }
     }
+
+    audio.addEventListener("canplay", () => {
+        if (pendingAutoPlay && audio.paused) {
+            safePlayAudio();
+        }
+    });
+
+    document.addEventListener("touchstart", () => {
+        if (pendingAutoPlay && audio.paused) {
+            safePlayAudio();
+        }
+    }, { passive: true });
+
+    document.addEventListener("click", () => {
+        if (pendingAutoPlay && audio.paused) {
+            safePlayAudio();
+        }
+    }, { passive: true });
 
     function updateMediaSession() {
         if (!('mediaSession' in navigator)) return;
@@ -551,14 +570,9 @@
         duration.textContent = "0:00";
 
         updateMediaSession();
-        preloadNextTrack();
 
         if (wasPlaying) {
-            try {
-                await audio.play();
-            } catch (e) {
-                console.warn("Autoplay error on mode change:", e);
-            }
+            await safePlayAudio();
         }
     }
 
@@ -646,15 +660,9 @@
         }
 
         updateMediaSession();
-        preloadNextTrack();
 
         if (autoPlay) {
-            try {
-                await audio.play();
-            } catch (error) {
-                console.error("playTrack error:", error);
-                showSimpleToast(`Click Play to start ${track.title}`);
-            }
+            await safePlayAudio();
         }
     }
 
@@ -663,21 +671,18 @@
             if (currentMode === "playlist") {
                 await playTrack(currentIndex, true);
             } else {
-                audio.src = MODE_TRACKS[currentMode]?.file || TRACKS[0].file;
+                audio.src = getSafeAudioUrl(MODE_TRACKS[currentMode]?.file || TRACKS[0].file);
                 audio.preload = "auto";
                 updateMediaSession();
-                try { await audio.play(); } catch {}
+                await safePlayAudio();
             }
             return;
         }
 
         if (audio.paused) {
-            try {
-                await audio.play();
-            } catch {
-                showSimpleToast("Could not play audio");
-            }
+            await safePlayAudio();
         } else {
+            pendingAutoPlay = false;
             audio.pause();
         }
     }
@@ -751,7 +756,6 @@
         if ('mediaSession' in navigator) {
             try { navigator.mediaSession.playbackState = 'playing'; } catch (e) {}
         }
-        preloadNextTrack();
     });
 
     audio.addEventListener("pause", () => {
