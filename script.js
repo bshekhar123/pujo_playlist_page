@@ -54,15 +54,15 @@
        ===================================================== */
 
     const SCENES = [
-        { start: 0, end: 2, desktop: "images/1030pm_adda_desktop.png", tab: "images/1030pm_adda_tab.png", mobile: "images/1030pm_adda_mobile.png" },
-        { start: 2, end: 8, desktop: "images/0200am_goodnight_desktop.png", tab: "images/0200am_goodnight_tab.png", mobile: "images/0200am_goodnight_mobile.png" },
-        { start: 8, end: 10, desktop: "images/0800am_morning_desktop.png", tab: "images/0800am_morning_tab.png", mobile: "images/0800am_morning_mobile.png" },
-        { start: 10, end: 13, desktop: "images/1000am_anjali_desktop.png", tab: "images/1000am_anjali_tab.png", mobile: "images/1000am_anjali_mobile.png" },
-        { start: 13, end: 16, desktop: "images/0100pm_bhog_desktop.png", tab: "images/0100pm_bhog_tab.png", mobile: "images/0100pm_bhog_mobile.png" },
-        { start: 16, end: 18.5, desktop: "images/0430pm_quiet_desktop.png", tab: "images/0430pm_quiet_tab.png", mobile: "images/0430pm_quiet_mobile.png" },
-        { start: 18.5, end: 20.5, desktop: "images/0630pm_aarti_desktop.png", tab: "images/0630pm_aarti_tab.png", mobile: "images/0630pm_aarti_mobile.png" },
-        { start: 20.5, end: 22.5, desktop: "images/0830pm_cultural_desktop.png", tab: "images/0830pm_cultural_tab.png", mobile: "images/0830pm_cultural_mobile.png" },
-        { start: 22.5, end: 24, desktop: "images/1030pm_adda_desktop.png", tab: "images/1030pm_adda_tab.png", mobile: "images/1030pm_adda_mobile.png" }
+        { start: 0, end: 2, desktop: "images/1030pm_adda_desktop.png", mobile: "images/1030pm_adda_mobile.png" },
+        { start: 2, end: 8, desktop: "images/0200am_goodnight_desktop.png", mobile: "images/0200am_goodnight_mobile.png" },
+        { start: 8, end: 10, desktop: "images/0800am_morning_desktop.png", mobile: "images/0800am_morning_mobile.png" },
+        { start: 10, end: 13, desktop: "images/1000am_anjali_desktop.png", mobile: "images/1000am_anjali_mobile.png" },
+        { start: 13, end: 16, desktop: "images/0100pm_bhog_desktop.png", mobile: "images/0100pm_bhog_mobile.png" },
+        { start: 16, end: 18.5, desktop: "images/0430pm_quiet_desktop.png", mobile: "images/0430pm_quiet_mobile.png" },
+        { start: 18.5, end: 20.5, desktop: "images/0630pm_aarti_desktop.png", mobile: "images/0630pm_aarti_mobile.png" },
+        { start: 20.5, end: 22.5, desktop: "images/0830pm_cultural_desktop.png", mobile: "images/0830pm_cultural_mobile.png" },
+        { start: 22.5, end: 24, desktop: "images/1030pm_adda_desktop.png", mobile: "images/1030pm_adda_mobile.png" }
     ];
 
     let activeBackground = "";
