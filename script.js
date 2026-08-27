@@ -411,11 +411,16 @@
     const preloader = new Audio();
     preloader.preload = "auto";
 
+    function getSafeAudioUrl(file) {
+        if (!file) return "";
+        return encodeURI(file);
+    }
+
     function preloadNextTrack() {
         if (currentMode !== "playlist") return;
         const nextIdx = nextIndex(1);
         if (nextIdx >= 0 && TRACKS[nextIdx]?.file) {
-            preloader.src = TRACKS[nextIdx].file;
+            preloader.src = getSafeAudioUrl(TRACKS[nextIdx].file);
         }
     }
 
@@ -521,7 +526,7 @@
             prevButton.style.opacity = "1";
             nextButton.style.opacity = "1";
             setTrackText();
-            audio.src = TRACKS[currentIndex].file;
+            audio.src = getSafeAudioUrl(TRACKS[currentIndex].file);
             audio.preload = "auto";
         } else {
             const modeData = MODE_TRACKS[mode];
@@ -536,7 +541,7 @@
             prevButton.style.opacity = "0.5";
             nextButton.style.opacity = "0.5";
 
-            audio.src = modeData.file;
+            audio.src = getSafeAudioUrl(modeData.file);
             audio.preload = "auto";
         }
 
@@ -624,13 +629,15 @@
             nextButton.style.opacity = "1";
         }
 
-        const changed = index !== currentIndex || !audio.getAttribute("src");
+        const targetSrc = getSafeAudioUrl(track.file);
+        const currentSrc = audio.getAttribute("src");
+        const changed = index !== currentIndex || !currentSrc || (currentSrc !== targetSrc && currentSrc !== track.file);
 
         currentIndex = index;
         setTrackText();
 
         if (changed) {
-            audio.src = track.file;
+            audio.src = targetSrc;
             audio.preload = "auto";
             progress.value = 0;
             progress.style.setProperty("--pct", "0%");
