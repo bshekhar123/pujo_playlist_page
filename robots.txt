@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pujo-playlist-page.vercel.app/sitemap.xml
