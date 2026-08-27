@@ -1617,10 +1617,10 @@ button {
 
 
 /* =====================================================
-   MOBILE
+   MOBILE & TABLET (RESPONSIVE)
    ===================================================== */
 
-@media (max-width: 760px) {
+@media (max-width: 1024px) {
 
     .background__image {
         object-position: center top;
